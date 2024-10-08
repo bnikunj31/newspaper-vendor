@@ -12,5 +12,6 @@ router.post("/update", users.updateUser);
 router.get("/delete/:id", users.delete);
 router.get("/disable/:id", users.disable);
 router.get("/enable/:id", users.enable);
+router.get("/calculateDue", users.calculateMonthlySummary);
 
 module.exports = router;

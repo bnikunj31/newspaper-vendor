@@ -97,21 +97,49 @@ exports.addTransactions = async (req, res) => {
           for (let i = 0; i < consumptions.length; i++) {
             if (consumptions[i].isActive == 1) {
               console.log(consumptions[i]);
-              console.log();
-              console.log();
-              console.log();
-              db.run(
-                `INSERT INTO transactions (customerId, newspaperId, combinationId, price, attendance) VALUES (?,?,?,?,?)`,
-                [
-                  consumptions[i].customerId,
-                  consumptions[i].newspaperId,
-                  consumptions[i].combinations,
-                  consumptions[i].price,
-                  consumptions[i].isActive,
-                ]
-              );
+              db.serialize(() => {
+                db.run(
+                  `INSERT INTO transactions (customerId, newspaperId, combinationId, price, attendance) VALUES (?,?,?,?,?)`,
+                  [
+                    consumptions[i].customerId,
+                    consumptions[i].newspaperId,
+                    consumptions[i].combinations,
+                    consumptions[i].price,
+                    consumptions[i].isActive,
+                  ]
+                );
+                db.run(
+                  `UPDATE customer SET lastActive = ? WHERE customerId = ?`,
+                  [getCurrentDate(), consumptions[i].customerId]
+                );
+              });
             }
           }
+          db.all(
+            `SELECT customerId, lastActive FROM customer`,
+            (err, customers) => {
+              if (err) {
+                console.error("Error in customers addTransactions", err);
+              } else {
+                customers.forEach((customer) => {
+                  if (customer.lastActive >= getDate45DaysAgo()) {
+                    db.run(
+                      `UPDATE customer SET defaulter = ? WHERE customerId = ? `,
+                      [customer.lastActive, customer.customerId],
+                      (err) => {
+                        if (err) {
+                          console.error(
+                            `Error in updating defaulter of ${customer.customerId}`,
+                            err
+                          );
+                        }
+                      }
+                    );
+                  }
+                });
+              }
+            }
+          );
         }
       }
     );
@@ -304,4 +332,13 @@ const getCurrentDate = () => {
   const month = String(today.getMonth() + 1).padStart(2, "0");
   const day = String(today.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+};
+
+const getDate45DaysAgo = () => {
+  const today = new Date();
+  today.setDate(today.getDate() - 45);
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 };

@@ -14,6 +14,7 @@
   "description": "A desktop application for newspaper vending",
   "dependencies": {
     "bootstrap": "^5.3.3",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "electron-packager": "^17.1.2",
     "express": "^4.21.0",

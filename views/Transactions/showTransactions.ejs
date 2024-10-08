@@ -7,7 +7,7 @@
       rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
-    <title>All Consumptions</title>
+    <title>All Transactions</title>
     <link rel="stylesheet" href="/styles.css" />
     <style>
       .container {
@@ -30,21 +30,29 @@
 
     <div class="container my-5">
       <div class="row mb-4">
-        <div class="col-md-6 d-flex align-items-center justify-content-between">
+        <div
+          class="col-md-6 d-flex align-items-center justify-content-between w-100"
+        >
           <h2 class="text-primary">All Transactions</h2>
+          <div class="col-md-6 text-end d-flex">
+            <input
+              id="searchInput"
+              class="form-control w-75"
+              type="text"
+              placeholder="Filter by Customer or Newspaper..."
+            />
+            <input
+              id="dateInput"
+              class="form-control w-25"
+              type="date"
+              placeholder="Filter by Transaction Date..."
+            />
+          </div>
           <a
             href="/transactions/singletransaction"
             class="btn btn-outline-primary"
             >Make Single Transaction</a
           >
-        </div>
-        <div class="col-md-6 text-end">
-          <input
-            id="searchInput"
-            class="form-control"
-            type="text"
-            placeholder="Search users transactions..."
-          />
         </div>
       </div>
       <table class="table table-bordered table-hover table-striped">
@@ -88,25 +96,38 @@
       </nav>
     </div>
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script
-      src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-      crossorigin="anonymous"
-    ></script>
     <script>
-      // Search functionality
+      // Filter functionality
       const searchInput = document.getElementById("searchInput");
-      searchInput.addEventListener("keyup", function () {
-        const filter = searchInput.value.toLowerCase();
+      const dateInput = document.getElementById("dateInput");
+
+      function filterRows() {
+        const searchFilter = searchInput.value.toLowerCase();
+        const dateFilter = dateInput.value; // Date format: YYYY-MM-DD
         const rows = document.querySelectorAll("#userTableBody tr");
+
         rows.forEach((row) => {
-          const name = row.cells[1].textContent.toLowerCase();
-          row.style.display = name.includes(filter) ? "" : "none";
+          const customerName = row.cells[0].textContent.toLowerCase();
+          const newspaperName = row.cells[1].textContent.toLowerCase();
+          const transactionDate = row.cells[5].textContent;
+
+          const matchesSearch =
+            customerName.includes(searchFilter) ||
+            newspaperName.includes(searchFilter);
+          const matchesDate = dateFilter
+            ? transactionDate.startsWith(dateFilter)
+            : true;
+
+          row.style.display = matchesSearch && matchesDate ? "" : "none";
         });
-      });
+      }
+
+      // Add event listeners for filter inputs
+      searchInput.addEventListener("keyup", filterRows);
+      dateInput.addEventListener("change", filterRows);
 
       // Pagination
-      const rowsPerPage = 50;
+      const rowsPerPage = 20;
       let currentPage = 1;
       const rows = document.querySelectorAll("#userTableBody tr");
       const pagination = document.getElementById("pagination");

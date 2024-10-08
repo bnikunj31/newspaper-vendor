@@ -39,17 +39,19 @@
 
     <div class="container my-5">
       <div class="row mb-4">
-        <div class="col-md-6 d-flex align-items-center justify-content-between">
+        <div
+          class="col-md-6 d-flex align-items-center justify-content-between w-100"
+        >
           <h2 class="text-primary">All Colonies</h2>
+          <div class="col-md-6 text-end">
+            <input
+              id="searchInput"
+              class="form-control"
+              type="text"
+              placeholder="Search Colonies..."
+            />
+          </div>
           <a href="/colony/add" class="btn btn-outline-primary">Add Colony</a>
-        </div>
-        <div class="col-md-6 text-end">
-          <input
-            id="searchInput"
-            class="form-control"
-            type="text"
-            placeholder="Search Colonies..."
-          />
         </div>
       </div>
       <table class="table table-bordered table-hover table-striped">

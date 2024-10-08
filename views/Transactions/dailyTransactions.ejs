@@ -60,11 +60,7 @@
           <tr>
             <td><%= row.transaction_id%></td>
             <td><%= row.customerName %></td>
-            <td class="text-center">
-              <input type="checkbox" class="form-check-input custom-checkbox"
-              name="status" <%= row.attendance == 1 ? "checked" : "" %>
-              id="status" disabled />
-            </td>
+            <td><%= row.newspaperName %></td>
             <td><%= row.combinationDays %></td>
             <td><%= row.price%></td>
             <td>

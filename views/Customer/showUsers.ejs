@@ -7,6 +7,10 @@
       rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
+    <link
+      href="/node_modules/select2/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
     <title>All Users</title>
     <link rel="stylesheet" href="/styles.css" />
     <style>
@@ -22,6 +26,14 @@
       .highlight {
         background-color: #e2e6ea !important;
       }
+      .filter-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .select2-container {
+        width: 200px !important;
+      }
     </style>
   </head>
   <body>
@@ -30,17 +42,72 @@
 
     <div class="container my-5">
       <div class="row mb-4">
-        <div class="col-md-6 d-flex align-items-center justify-content-between">
+        <div
+          class="col-md-12 d-flex align-items-center justify-content-between w-100"
+        >
           <h2 class="text-primary">All Customers</h2>
           <a href="/add" class="btn btn-outline-primary">Add Customer</a>
         </div>
-        <div class="col-md-6 text-end">
+        <div class="filter-container mt-3">
+          <!-- Colony Filter -->
+          <select id="colonyFilter" class="form-control">
+            <option value="">All Colonies</option>
+            <% rows.forEach(colony => { %>
+            <option value="<%= colony.colony %>"><%= colony.colony %></option>
+            <% }) %>
+          </select>
+
+          <!-- Route Filter -->
+          <input
+            id="routeFilter"
+            class="form-control w-25"
+            type="text"
+            placeholder="Filter by Route"
+          />
+
+          <!-- Search Users -->
           <input
             id="searchInput"
-            class="form-control"
+            class="form-control w-25"
             type="text"
             placeholder="Search users..."
           />
+
+          <!-- Last Active Filter -->
+          <input
+            id="lastActiveFilter"
+            class="form-control w-25"
+            type="date"
+            placeholder="Filter by Last Active (YYYY-MM-DD)"
+          />
+
+          <!-- Paid Filter -->
+          <input
+            id="paidFilter"
+            class="form-control w-25"
+            type="text"
+            placeholder="Filter by Paid"
+          />
+
+          <!-- Due Filter -->
+          <input
+            id="dueFilter"
+            class="form-control w-25"
+            type="text"
+            placeholder="Filter by Due"
+          />
+
+          <!-- Defaulter Filter Checkbox -->
+          <div class="form-check">
+            <input
+              type="checkbox"
+              id="defaulterFilter"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="defaulterFilter"
+              >Defaulters</label
+            >
+          </div>
         </div>
       </div>
       <table class="table table-bordered table-hover table-striped">
@@ -55,6 +122,7 @@
             <th data-sort="due">Due <i class="fas fa-sort"></i></th>
             <th>Route</th>
             <th>Last Active</th>
+            <th>Defaulter</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -70,6 +138,10 @@
             <td><%= row.due %></td>
             <td><%= row.route %></td>
             <td><%= row.lastActive %></td>
+            <td class="text-center">
+              <input type="checkbox" name="defaulter" class="check" disabled
+              id="defaulter" <%= row.defaulter === 1 ? "checked" : "" %> >
+            </td>
             <td>
               <a
                 href="/update/<%= row.customerId %>"
@@ -102,129 +174,6 @@
               <% } %>
             </td>
           </tr>
-
-          <!-- Disable Modal -->
-          <div
-            class="modal fade"
-            id="disableModal<%= row.customerId %>"
-            tabindex="-1"
-            aria-labelledby="disableModalLabel"
-            aria-hidden="true"
-          >
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="disableModalLabel">
-                    Confirm Disable
-                  </h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div class="modal-body">
-                  Are you sure you want to disable this customer?
-                </div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Cancel
-                  </button>
-                  <a href="/disable/<%= row.customerId %>" class="btn btn-dark"
-                    >Disable</a
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Enable Modal -->
-          <div
-            class="modal fade"
-            id="enableModal<%= row.customerId %>"
-            tabindex="-1"
-            aria-labelledby="enableModalLabel"
-            aria-hidden="true"
-          >
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="enableModalLabel">
-                    Confirm Enable
-                  </h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div class="modal-body">
-                  Are you sure you want to enable this customer?
-                </div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Cancel
-                  </button>
-                  <a
-                    href="/enable/<%= row.customerId %>"
-                    class="btn btn-success"
-                    >Enable</a
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Delete Modal -->
-          <div
-            class="modal fade"
-            id="deleteModal<%= row.customerId %>"
-            tabindex="-1"
-            aria-labelledby="deleteModalLabel"
-            aria-hidden="true"
-          >
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="deleteModalLabel">
-                    Confirm Delete
-                  </h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div class="modal-body">
-                  Are you sure you want to delete this customer?
-                </div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Cancel
-                  </button>
-                  <a href="/delete/<%= row.customerId %>" class="btn btn-danger"
-                    >Delete</a
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-
           <% }) %> <% } %>
         </tbody>
       </table>
@@ -232,83 +181,111 @@
         <ul class="pagination justify-content-center" id="pagination"></ul>
       </nav>
     </div>
+
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/node_modules/select2/dist/js/select2.min.js"></script>
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // Search functionality
-      const searchInput = document.getElementById("searchInput");
-      searchInput.addEventListener("keyup", function () {
-        const filter = searchInput.value.toLowerCase();
-        const rows = document.querySelectorAll("#userTableBody tr");
-        rows.forEach((row) => {
-          const name = row.cells[1].textContent.toLowerCase();
-          row.style.display = name.includes(filter) ? "" : "none";
-        });
-      });
+      $(document).ready(function () {
+        $("#colonyFilter").select2();
 
-      // Pagination
-      const rowsPerPage = 50;
-      let currentPage = 1;
-      const rows = document.querySelectorAll("#userTableBody tr");
-      const pagination = document.getElementById("pagination");
+        // Filter functionality
+        function filterTable() {
+          const colonyFilter = $("#colonyFilter").val();
+          const routeFilter = $("#routeFilter").val().toLowerCase();
+          const searchInput = $("#searchInput").val().toLowerCase();
+          const lastActiveFilter = $("#lastActiveFilter").val();
+          const paidFilter = $("#paidFilter").val();
+          const dueFilter = $("#dueFilter").val();
+          const defaulterFilter = $("#defaulterFilter").is(":checked");
 
-      function displayRows(page) {
-        currentPage = page;
-        rows.forEach((row, index) => {
-          row.style.display =
-            index >= (currentPage - 1) * rowsPerPage &&
-            index < currentPage * rowsPerPage
-              ? ""
-              : "none";
-        });
-      }
+          // Get all rows
+          const rows = $("#userTableBody tr");
+          rows.each(function () {
+            const row = $(this);
+            const colonyText = row.find("td").eq(4).text();
+            const routeText = row.find("td").eq(7).text();
+            const nameText = row.find("td").eq(1).text();
+            const lastActiveText = row.find("td").eq(8).text();
+            const paidText = row.find("td").eq(5).text();
+            const dueText = row.find("td").eq(6).text();
+            const isDefaulter = row
+              .find("td")
+              .eq(9)
+              .find("input")
+              .is(":checked");
 
-      function setupPagination() {
-        const pageCount = Math.ceil(rows.length / rowsPerPage);
-        pagination.innerHTML = "";
-        for (let i = 1; i <= pageCount; i++) {
-          const li = document.createElement("li");
-          li.classList.add("page-item");
-          li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-          li.addEventListener("click", function (e) {
-            e.preventDefault();
-            displayRows(i);
-            document
-              .querySelectorAll(".page-item")
-              .forEach((item) => item.classList.remove("active"));
-            li.classList.add("active");
+            const isColonyMatch =
+              colonyFilter === "" || colonyText === colonyFilter;
+            const isRouteMatch = routeText.toLowerCase().includes(routeFilter);
+            const isNameMatch = nameText.toLowerCase().includes(searchInput);
+            const isLastActiveMatch =
+              lastActiveFilter === "" ||
+              lastActiveText.includes(lastActiveFilter);
+            const isPaidMatch =
+              paidFilter === "" || paidText.includes(paidFilter);
+            const isDueMatch = dueFilter === "" || dueText.includes(dueFilter);
+            const isDefaulterMatch = !defaulterFilter || isDefaulter;
+
+            const isVisible =
+              isColonyMatch &&
+              isRouteMatch &&
+              isNameMatch &&
+              isLastActiveMatch &&
+              isPaidMatch &&
+              isDueMatch &&
+              isDefaulterMatch;
+
+            row.toggle(isVisible);
           });
-          if (i === currentPage) {
-            li.classList.add("active");
-          }
-          pagination.appendChild(li);
+
+          setupPagination();
         }
-      }
 
-      // Sorting functionality
-      const headers = document.querySelectorAll("th[data-sort]");
-      headers.forEach((header) => {
-        header.addEventListener("click", () => {
-          const sortKey = header.getAttribute("data-sort");
-          const sortedRows = Array.from(rows).sort((a, b) => {
-            const valA = a
-              .querySelector(`td:nth-child(${header.cellIndex + 1})`)
-              .textContent.trim();
-            const valB = b
-              .querySelector(`td:nth-child(${header.cellIndex + 1})`)
-              .textContent.trim();
-            return isNaN(valA) || isNaN(valB)
-              ? valA.localeCompare(valB)
-              : parseFloat(valA) - parseFloat(valB);
+        // Event listeners for filters
+        $("#colonyFilter").change(filterTable);
+        $("#routeFilter").on("input", filterTable);
+        $("#searchInput").on("input", filterTable);
+        $("#lastActiveFilter").on("input", filterTable);
+        $("#paidFilter").on("input", filterTable);
+        $("#dueFilter").on("input", filterTable);
+        $("#defaulterFilter").change(filterTable);
+
+        // Pagination logic
+        const rowsPerPage = 50;
+        let currentPage = 1;
+
+        function displayRows(page) {
+          currentPage = page;
+          const visibleRows = $("#userTableBody tr:visible");
+          visibleRows.each(function (index) {
+            $(this).toggle(
+              index < rowsPerPage * page && index >= rowsPerPage * (page - 1)
+            );
           });
-          sortedRows.forEach((row) =>
-            document.querySelector("#userTableBody").appendChild(row)
-          );
-        });
-      });
+        }
 
-      // Initial setup
-      displayRows(1);
-      setupPagination();
+        function setupPagination() {
+          const visibleRows = $("#userTableBody tr:visible").length;
+          const totalPages = Math.ceil(visibleRows / rowsPerPage);
+          $("#pagination").empty();
+          for (let i = 1; i <= totalPages; i++) {
+            $("#pagination").append(
+              `<li class="page-item ${i === currentPage ? "active" : ""}">
+                <a class="page-link" href="#">${i}</a>
+              </li>`
+            );
+          }
+        }
+
+        $("#pagination").on("click", "a", function (e) {
+          e.preventDefault();
+          const page = parseInt($(this).text());
+          displayRows(page);
+        });
+
+        filterTable();
+      });
     </script>
   </body>
 </html>

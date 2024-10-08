@@ -153,3 +153,47 @@ exports.enable = async (req, res) => {
     console.error("Error in Disabling colony: ", err);
   }
 };
+
+// Calculate monthly Amount
+exports.calculateMonthlySummary = (req, res) => {
+  const currentDate = new Date();
+  const month = currentDate.getMonth() + 1;
+  const year = currentDate.getFullYear();
+
+  const query = `
+    SELECT DISTINCT customerId, SUM(price) AS totalPrice
+    FROM transactions
+    WHERE strftime('%m', transactionDate) = ?
+      AND strftime('%Y', transactionDate) = ?
+    GROUP BY customerId;
+  `;
+
+  db.all(query, [month < 10 ? `0${month}` : month, year], (err, rows) => {
+    if (err) {
+      console.error("Error fetching transaction data:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    // Loop through the results and update the 'due' field for each customer
+    rows.forEach((row) => {
+      const updateQuery = `UPDATE Customer SET due = ? WHERE customerId = ?`;
+      db.run(updateQuery, [row.totalPrice, row.customerId], (updateErr) => {
+        if (updateErr) {
+          console.error(
+            `Error updating due for customerId ${row.customerId}:`,
+            updateErr
+          );
+        } else {
+          console.log(
+            `Updated due for customerId ${row.customerId} to ${row.totalPrice}`
+          );
+        }
+      });
+    });
+
+    res.json({
+      message: "Monthly summary fetched and customer dues updated successfully",
+      data: rows,
+    });
+  });
+};

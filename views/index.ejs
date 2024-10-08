@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cron Job Scheduler</title>
+    <link
+      rel="stylesheet"
+      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .card {
+        border-radius: 15px;
+      }
+      .btn-primary {
+        background-color: #007bff;
+        border: none;
+      }
+      .btn-primary:hover {
+        background-color: #0056b3;
+      }
+      .form-row {
+        display: flex;
+        justify-content: space-between;
+      }
+      .form-row .form-group {
+        flex: 1;
+        margin-right: 10px;
+      }
+      .form-row .form-group:last-child {
+        margin-right: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('./navbar.html') %>
+    <div class="container my-5">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Update Cron Time</h5>
+          <p class="text-muted">
+            Enter new minutes (0-59) and hours (0-23) below.
+          </p>
+
+          <form id="cronForm" action="/update-cron-time" method="post">
+            <div class="form-row">
+              <div class="form-group mb-3">
+                <label for="hours" class="form-label">Hours (0-23)</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="hours"
+                  name="hours"
+                  placeholder="Enter hours..."
+                  required
+                />
+              </div>
+              <div class="form-group mb-3">
+                <label for="minutes" class="form-label">Minutes (0-59)</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="minutes"
+                  name="minutes"
+                  placeholder="Enter minutes..."
+                  required
+                />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              Update Cron Time
+            </button>
+          </form>
+
+          <div
+            class="alert alert-info mt-3"
+            id="successMessage"
+            style="display: none"
+          ></div>
+          <div
+            class="alert alert-danger mt-3"
+            id="errorMessage"
+            style="display: none"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Handle form submission to update cron time
+      document
+        .getElementById("cronForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault(); // Prevent default form submission
+
+          const minutes = document.getElementById("minutes").value;
+          const hours = document.getElementById("hours").value;
+
+          // Validate input format
+          const minutesValid = /^[0-5]?[0-9]$|^\*\/[0-9]+$/.test(minutes);
+          const hoursValid = /^[01]?[0-9]|2[0-3]$|^\*\/[0-9]+$/.test(hours);
+
+          const newCronTime = `${minutes} ${hours} * * *`; // Construct cron time
+
+          // Clear previous messages
+          document.getElementById("successMessage").style.display = "none";
+          document.getElementById("errorMessage").style.display = "none";
+
+          // Send POST request to update the cron time
+          fetch("/cron/update-cron-time", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ cronTime: newCronTime }),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Error updating cron time");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              document.getElementById("successMessage").textContent =
+                data.message;
+              document.getElementById("successMessage").style.display = "block";
+              // Update the displayed cron time
+              document.getElementById("currentCronTime").textContent =
+                newCronTime;
+              document.getElementById("minutes").value = ""; // Clear input fields
+              document.getElementById("hours").value = ""; // Clear input fields
+            })
+            .catch((error) => {
+              throw err;
+            });
+        });
+    </script>
+  </body>
+</html>
