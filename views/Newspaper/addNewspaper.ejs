@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Combinations Form</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="stylesheet"
+      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <%- include('../navbar.html') %>
+
+    <div class="container my-5 bg-light p-4 border rounded">
+      <h2>Add Newspaper</h2>
+      <form method="post" action="/newspaper/add">
+        <!-- Code -->
+        <div class="mb-3">
+          <label for="code" class="form-label">Newspaper Code</label>
+          <input
+            type="text"
+            class="form-control"
+            id="code"
+            name="code"
+            placeholder="Enter code"
+            required
+          />
+        </div>
+
+        <!-- Name -->
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            placeholder="Enter name"
+            required
+          />
+        </div>
+
+        <!-- Price -->
+        <div class="mb-3">
+          <label for="price" class="form-label">Price</label>
+          <input
+            type="number"
+            class="form-control"
+            id="price"
+            name="price"
+            min="1"
+            placeholder="Enter price"
+            required
+          />
+        </div>
+
+        <!-- Available -->
+        <div class="mb-3">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="available"
+            name="available"
+            value="true"
+            required
+            checked
+          />
+          <label for="available" class="form-label">Active</label>
+        </div>
+
+        <!-- Days (Dropdown populated from database) -->
+        <div class="mb-3">
+          <label for="days" class="form-label">Combinations</label>
+          <select class="form-select" id="days" name="days" required>
+            <option selected disabled>Select Combination</option>
+            <% rows.forEach(function(row) {%>
+            <option value="<%= row.combinationDays %>">
+              <%= row.combinationDays %>
+            </option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Add Newspaper</button>
+      </form>
+    </div>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <title>All Consumptions</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      table thead th {
+        cursor: pointer;
+      }
+      .highlight {
+        background-color: #e2e6ea !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <%- include('../navbar.html') %>
+
+    <div class="container my-5">
+      <div class="row mb-4">
+        <div class="col-md-6 d-flex align-items-center justify-content-between">
+          <h2 class="text-primary">All Consumptions</h2>
+          <a href="/consumptions/add" class="btn btn-outline-primary"
+            >Add Consumptions</a
+          >
+        </div>
+        <div class="col-md-6 text-end">
+          <input
+            id="searchInput"
+            class="form-control"
+            type="text"
+            placeholder="Search Consumptions..."
+          />
+        </div>
+      </div>
+      <table class="table table-bordered table-hover table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th data-sort="id">Serial No.<i class="fas fa-sort"></i></th>
+            <th data-sort="name">Customer Name <i class="fas fa-sort"></i></th>
+            <th>Newspaper Name</th>
+            <th>Days</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody">
+          <% if(consumptions.length > 0) { %> <% consumptions.forEach(row => {
+          %>
+          <tr>
+            <td><%= row.consumptionId %></td>
+            <td><%= row.customerName %></td>
+            <td><%= row.newspaperName %></td>
+            <td><%= row.combinationDays%></td>
+            <td>
+              <input type="checkbox" class="form-check-input custom-checkbox"
+              name="status" <%= row.isActive == 1 ? "checked" : "" %>
+              id="status" disabled />
+            </td>
+            <td>
+              <a
+                href="/consumptions/update/<%= row.consumptionId %>"
+                class="btn btn-sm btn-outline-warning"
+                >Update</a
+              >
+              <% if(row.disable == 0 ) { %>
+              <a
+                href="#"
+                class="btn btn-sm btn-outline-dark"
+                onclick="showModal('Disable', '/consumptions/disable/<%= row.consumptionId %>')"
+                >Disable</a
+              >
+              <% } else{ %>
+              <a
+                href="#"
+                class="btn btn-sm btn-outline-success"
+                onclick="showModal('Enable', '/consumptions/enable/<%= row.consumptionId %>')"
+                >Enable</a
+              >
+              <a
+                href="#"
+                class="btn btn-sm btn-outline-danger"
+                onclick="showModal('Delete', '/consumptions/delete/<%= row.consumptionId %>')"
+                >Delete</a
+              >
+              <% } %>
+            </td>
+          </tr>
+          <% }) %> <% } %>
+        </tbody>
+      </table>
+      <nav>
+        <ul class="pagination justify-content-center" id="pagination"></ul>
+      </nav>
+    </div>
+
+    <!-- Bootstrap Modal -->
+    <div
+      class="modal fade"
+      id="confirmModal"
+      tabindex="-1"
+      aria-labelledby="confirmModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmModalLabel">Confirm Action</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to <span id="modalAction"></span> this
+            consumption?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <a id="confirmButton" class="btn btn-danger">Confirm</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Search functionality
+      const searchInput = document.getElementById("searchInput");
+      searchInput.addEventListener("keyup", function () {
+        const filter = searchInput.value.toLowerCase();
+        const rows = document.querySelectorAll("#userTableBody tr");
+        rows.forEach((row) => {
+          const name = row.cells[1].textContent.toLowerCase();
+          row.style.display = name.includes(filter) ? "" : "none";
+        });
+      });
+
+      // Pagination
+      const rowsPerPage = 50;
+      let currentPage = 1;
+      const rows = document.querySelectorAll("#userTableBody tr");
+      const pagination = document.getElementById("pagination");
+
+      function displayRows(page) {
+        currentPage = page;
+        rows.forEach((row, index) => {
+          row.style.display =
+            index >= (currentPage - 1) * rowsPerPage &&
+            index < currentPage * rowsPerPage
+              ? ""
+              : "none";
+        });
+      }
+
+      function setupPagination() {
+        const pageCount = Math.ceil(rows.length / rowsPerPage);
+        pagination.innerHTML = "";
+        for (let i = 1; i <= pageCount; i++) {
+          const li = document.createElement("li");
+          li.classList.add("page-item");
+          li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+          li.addEventListener("click", function (e) {
+            e.preventDefault();
+            displayRows(i);
+            document
+              .querySelectorAll(".page-item")
+              .forEach((item) => item.classList.remove("active"));
+            li.classList.add("active");
+          });
+          if (i === currentPage) {
+            li.classList.add("active");
+          }
+          pagination.appendChild(li);
+        }
+      }
+
+      // Function to show the modal
+      function showModal(action, url) {
+        document.getElementById("modalAction").textContent =
+          action.toLowerCase();
+        document.getElementById("confirmButton").setAttribute("href", url);
+        const modal = new bootstrap.Modal(
+          document.getElementById("confirmModal")
+        );
+        modal.show();
+      }
+
+      // Sorting functionality
+      const headers = document.querySelectorAll("th[data-sort]");
+      headers.forEach((header) => {
+        header.addEventListener("click", () => {
+          const sortKey = header.getAttribute("data-sort");
+          const sortedRows = Array.from(rows).sort((a, b) => {
+            const valA = a
+              .querySelector(`td:nth-child(${header.cellIndex + 1})`)
+              .textContent.trim();
+            const valB = b
+              .querySelector(`td:nth-child(${header.cellIndex + 1})`)
+              .textContent.trim();
+            return isNaN(valA) || isNaN(valB)
+              ? valA.localeCompare(valB)
+              : parseFloat(valA) - parseFloat(valB);
+          });
+          sortedRows.forEach((row) =>
+            document.querySelector("#userTableBody").appendChild(row)
+          );
+        });
+      });
+
+      // Initial setup
+      displayRows(1);
+      setupPagination();
+    </script>
+  </body>
+</html>

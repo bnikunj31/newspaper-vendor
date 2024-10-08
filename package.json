@@ -1,0 +1,30 @@
+{
+  "name": "newspaper-vendor",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app",
+    "electron": "electron main.js",
+    "package-win": "electron-packager . newspaper-vendor --platform=win32 --arch=x64 --icon=public/icon.ico --out=build --overwrite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "A desktop application for newspaper vending",
+  "dependencies": {
+    "bootstrap": "^5.3.3",
+    "ejs": "^3.1.10",
+    "electron-packager": "^17.1.2",
+    "express": "^4.21.0",
+    "jquery": "^3.7.1",
+    "node-cron": "^3.0.3",
+    "nodemon": "^3.1.7",
+    "select2": "^4.1.0-rc.0",
+    "sqlite3": "^5.1.7",
+    "view-engine": "^1.1.1"
+  },
+  "devDependencies": {
+    "electron": "^32.1.2"
+  }
+}

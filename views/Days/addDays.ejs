@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Combinations Form</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="stylesheet"
+      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <%- include('../navbar.html') %>
+
+    <div class="container mt-5 bg-light p-4 border rounded">
+      <h2>Add Combinations</h2>
+      <form method="post" action="/days/add">
+        <!-- Days -->
+        <div class="mb-3">
+          <label class="form-label">Select Days:</label><br />
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="days[]"
+              id="monday"
+              value="Monday"
+            />
+            <label class="form-check-label" for="monday">Monday</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="days[]"
+              id="tuesday"
+              value="Tuesday"
+            />
+            <label class="form-check-label" for="tuesday">Tuesday</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="days[]"
+              id="wednesday"
+              value="Wednesday"
+            />
+            <label class="form-check-label" for="wednesday">Wednesday</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="days[]"
+              id="thursday"
+              value="Thursday"
+            />
+            <label class="form-check-label" for="thursday">Thursday</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="days[]"
+              id="friday"
+              value="Friday"
+            />
+            <label class="form-check-label" for="friday">Friday</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="days[]"
+              id="saturday"
+              value="Saturday"
+            />
+            <label class="form-check-label" for="saturday">Saturday</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="days[]"
+              id="sunday"
+              value="Sunday"
+            />
+            <label class="form-check-label" for="sunday">Sunday</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="days[]"
+              id="monthly"
+              value="Monthly"
+            />
+            <label class="form-check-label" for="monthly">Monthly</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="days[]"
+              id="weekly"
+              value="Weekly"
+            />
+            <label class="form-check-label" for="weekly">Weekly</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="days[]"
+              id="special"
+              value="Special"
+            />
+            <label class="form-check-label" for="special">Special</label>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Add Combination</button>
+      </form>
+    </div>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

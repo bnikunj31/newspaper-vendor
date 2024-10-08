@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add User Form</title>
+    <link rel="stylesheet" href="/styles.css" />
+
+    <link
+      rel="stylesheet"
+      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <%- include('../navbar.html') %>
+
+    <div class="container my-5 rounded bg-light p-4">
+      <h2>Add User</h2>
+      <form method="post" action="/add">
+        <!-- Name -->
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            placeholder="Enter name"
+            required
+          />
+        </div>
+
+        <!-- Contact Number -->
+        <div class="mb-3">
+          <label for="contactNumber" class="form-label">Contact Number</label>
+          <input
+            type="tel"
+            class="form-control"
+            id="contactumber"
+            name="contact_number"
+            placeholder="Enter contact number"
+            required
+          />
+        </div>
+
+        <!-- Address -->
+        <div class="mb-3">
+          <label for="address" class="form-label">Address</label>
+          <input
+            type="text"
+            class="form-control"
+            id="address"
+            name="address"
+            placeholder="Enter address"
+            required
+          />
+        </div>
+
+        <!-- Colony (Dropdown populated from database) -->
+        <div class="mb-3">
+          <label for="colony" class="form-label">Colony</label>
+          <div class="d-flex align-items-center gap-1">
+            <select class="form-select" id="colony" name="colony" required>
+              <option selected disabled>Select colony</option>
+
+              <% rows.forEach(function(row) {%>
+              <option value="<%= row.colonyName %>">
+                <%= row.colonyName %>
+              </option>
+              <% }) %>
+            </select>
+            <a href="/colony/add" class="btn btn-light fs-5 fw-bold">+</a>
+          </div>
+        </div>
+
+        <!-- Paid -->
+        <div class="mb-3">
+          <label for="paid" class="form-label">Paid</label>
+          <input
+            type="number"
+            class="form-control"
+            id="paid"
+            name="paid"
+            placeholder="Enter paid amount"
+            value="0"
+          />
+        </div>
+
+        <!-- Due -->
+        <div class="mb-3">
+          <label for="due" class="form-label">Due</label>
+          <input
+            type="number"
+            class="form-control"
+            id="due"
+            name="due"
+            placeholder="Enter due amount"
+            value="0"
+          />
+        </div>
+
+        <!-- Route -->
+        <div class="mb-3">
+          <label for="route" class="form-label">Route</label>
+          <input
+            type="number"
+            class="form-control"
+            id="route"
+            name="route"
+            placeholder="Enter route"
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Add User</button>
+      </form>
+    </div>
+
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

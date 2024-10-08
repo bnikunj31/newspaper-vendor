@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add User Form</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="stylesheet"
+      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/node_modules/select2/dist/css/select2.min.css"
+    />
+    <!-- Select2 CSS -->
+  </head>
+  <body>
+    <!-- Navbar -->
+    <%- include('../navbar.html') %>
+
+    <div class="container my-5 rounded bg-light p-4">
+      <h2>Add Combination</h2>
+      <form method="post" action="/consumptions/add">
+        <!-- Colony (Dropdown with search) -->
+        <div class="mb-3">
+          <label for="colony" class="form-label">Colony</label>
+          <select
+            class="form-select select2"
+            id="colony"
+            name="colony"
+            required
+          >
+            <option selected disabled>Select colony</option>
+            <% data.filter(item => item.type ===
+            'Colony').forEach(function(colony) { %>
+            <option value="<%= colony.id %>">
+              <%= colony.name %> (<%= colony.id %>)
+            </option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Customer ID (Dropdown with search) -->
+        <div class="mb-3">
+          <label for="customerId" class="form-label">Customer</label>
+          <select
+            class="form-select select2"
+            id="customerId"
+            name="customerId"
+            required
+          >
+            <option selected disabled>Select Customer</option>
+            <% data.filter(item => item.type ===
+            'Customer').forEach(function(customer) { %>
+            <option value="<%= customer.id %>"><%= customer.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Newspaper Code (Dropdown with search) -->
+        <div class="mb-3">
+          <label for="newspaper" class="form-label">Newspaper</label>
+          <select
+            class="form-select select2"
+            id="newspaperId"
+            name="newspaperId"
+            required
+          >
+            <option selected disabled>Select Newspaper</option>
+            <% data.filter(item => item.type ===
+            'Newspaper').forEach(function(newspaper) { %>
+            <option value="<%= newspaper.id %>"><%= newspaper.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Days (Dropdown with search) -->
+        <div class="mb-3">
+          <label for="days" class="form-label">Days</label>
+          <select class="form-select select2" id="days" name="days" required>
+            <option selected disabled>Select Days</option>
+            <% data.filter(item => item.type === 'Days').forEach(function(day) {
+            %>
+            <option value="<%= day.id %>"><%= day.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Add Consumption</button>
+      </form>
+    </div>
+
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/node_modules/select2/dist/js/select2.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $(".select2").select2();
+      });
+    </script>
+  </body>
+</html>

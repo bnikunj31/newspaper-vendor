@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <title>All Newspapers</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+        body {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("bg.jpg");
+            background-position: center;
+            background-size: cover;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        table thead th {
+            cursor: pointer;
+        }
+        .highlight {
+            background-color: #e2e6ea !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <%- include('../navbar.html') %>
+
+    <div class="container my-5">
+        <div class="row mb-4">
+            <div class="col-md-6 d-flex align-items-center justify-content-between">
+                <h2 class="text-primary">All Newspaper</h2>
+                <a href="/newspaper/add" class="btn btn-outline-primary">Add Newspaper</a>
+            </div>
+            <div class="col-md-6 text-end">
+                <input id="searchInput" class="form-control" type="text" placeholder="Search Newspapers..." />
+            </div>
+        </div>
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th data-sort="id"># <i class="fas fa-sort"></i></th>
+                    <th data-sort="code">Newspaper Code <i class="fas fa-sort"></i></th>
+                    <th data-sort="name">Newspaper Name <i class="fas fa-sort"></i></th>
+                    <th data-sort="price">Price</th>
+                    <th data-sort="days">Days</th>
+                    <th data-sort="isActive">Is Active</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <% if(rows.length > 0) { rows.forEach(row => { %>
+                <tr>
+                    <td><%= row.newspaperId %></td>
+                    <td><%= row.newspaperCode %></td>
+                    <td><%= row.newspaperName %></td>
+                    <td><%= row.price %></td>
+                    <td><%= row.combinationDays %></td>
+                    <td>
+                        <input type="checkbox" class="form-check-input custom-checkbox" disabled <%= row.Available ? 'checked' : '' %>>
+                    </td>
+                    <td>
+                        <a href="/newspaper/update/<%= row.newspaperId %>" class="btn btn-sm btn-outline-warning">Update</a>
+                        <% if(row.disable === 0 ) { %>
+                        <button class="btn btn-sm btn-outline-dark" onclick="confirmAction('disable', '<%= row.newspaperId %>')">Disable</button>
+                        <% } else { %>
+                        <button class="btn btn-sm btn-outline-success" onclick="confirmAction('enable', '<%= row.newspaperId %>')">Enable</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmAction('delete', '<%= row.newspaperId %>')">Delete</button>
+                        <% } %>
+                    </td>
+                </tr>
+                <% }) } %>
+            </tbody>
+        </table>
+        <nav>
+            <ul class="pagination justify-content-center" id="pagination"></ul>
+        </nav>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to <span id="modalAction"></span> this newspaper?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmButton">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById("searchInput");
+        searchInput.addEventListener("keyup", function () {
+            const filter = searchInput.value.toLowerCase();
+            const rows = document.querySelectorAll("#userTableBody tr");
+            rows.forEach((row) => {
+                const name = row.cells[1].textContent.toLowerCase();
+                row.style.display = name.includes(filter) ? "" : "none";
+            });
+        });
+
+        // Pagination
+        const rowsPerPage = 50;
+        let currentPage = 1;
+        const rows = document.querySelectorAll("#userTableBody tr");
+        const pagination = document.getElementById("pagination");
+
+        function displayRows(page) {
+            currentPage = page;
+            rows.forEach((row, index) => {
+                row.style.display =
+                    index >= (currentPage - 1) * rowsPerPage &&
+                    index < currentPage * rowsPerPage
+                        ? ""
+                        : "none";
+            });
+        }
+
+        function setupPagination() {
+            const pageCount = Math.ceil(rows.length / rowsPerPage);
+            pagination.innerHTML = "";
+            for (let i = 1; i <= pageCount; i++) {
+                const li = document.createElement("li");
+                li.classList.add("page-item");
+                li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                li.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    displayRows(i);
+                    document.querySelectorAll(".page-item").forEach((item) => item.classList.remove("active"));
+                    li.classList.add("active");
+                });
+                if (i === currentPage) {
+                    li.classList.add("active");
+                }
+                pagination.appendChild(li);
+            }
+        }
+
+        // Confirm Action Function
+        let actionType;
+        let newspaperId;
+
+        function confirmAction(action, id) {
+            actionType = action;
+            newspaperId = id;
+            document.getElementById("modalAction").textContent = action === 'delete' ? 'delete' : action;
+            const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            confirmationModal.show();
+        }
+
+        document.getElementById("confirmButton").addEventListener("click", function() {
+            // Handle the action based on the confirmed action type
+            const url = `/newspaper/${actionType}/${newspaperId}`;
+            window.location.href = url; // Redirect to the appropriate action
+        });
+
+        // Sorting functionality
+        const headers = document.querySelectorAll("th[data-sort]");
+        headers.forEach((header) => {
+            header.addEventListener("click", () => {
+                const sortKey = header.getAttribute("data-sort");
+                const sortedRows = Array.from(rows).sort((a, b) => {
+                    const valA = a.querySelector(`td:nth-child(${header.cellIndex + 1})`).textContent.trim();
+                    const valB = b.querySelector(`td:nth-child(${header.cellIndex + 1})`).textContent.trim();
+                    return isNaN(valA) || isNaN(valB)
+                        ? valA.localeCompare(valB)
+                        : parseFloat(valA) - parseFloat(valB);
+                });
+                sortedRows.forEach((row) => document.querySelector("#userTableBody").appendChild(row));
+            });
+        });
+
+        // Initial setup
+        displayRows(1);
+        setupPagination();
+    </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-5">
+  <div class="container-fluid">
+    <!-- Logo on the left -->
+    <a
+      class="navbar-brand"
+      href="/"
+      style="text-decoration: none; color: black; font-size: xx-large"
+      tabindex="-1"
+      >Vendor</a
+    >
+
+    <!-- Button for toggling the navbar on small screens -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavDropdown"
+      aria-controls="navbarNavDropdown"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Centered Dropdown Links -->
+    <div
+      class="collapse navbar-collapse justify-content-center"
+      id="navbarNavDropdown"
+    >
+      <ul class="navbar-nav d-flex gap-5 gap-md-2">
+        <!-- Colony Dropdown Menu -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle fw-bold"
+            href="#"
+            id="colonyDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Colony
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="colonyDropdown">
+            <li><a class="dropdown-item" href="/colony">Show All</a></li>
+            <li>
+              <a class="dropdown-item" href="/colony/add">Add Colony</a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Days Dropdown Menu -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle fw-bold"
+            href="#"
+            id="daysDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Days
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="daysDropdown">
+            <li><a class="dropdown-item" href="/days">Show All</a></li>
+            <li>
+              <a class="dropdown-item" href="/days/add">Add Combination Days</a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Newspaper Dropdown Menu -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle fw-bold"
+            href="#"
+            id="newspaperDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Newspaper
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="newspaperDropdown">
+            <li><a class="dropdown-item" href="/newspaper">Show All</a></li>
+            <li>
+              <a class="dropdown-item" href="/newspaper/add">Add Newspaper</a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Users Dropdown Menu -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle fw-bold"
+            href="#"
+            id="customerDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Customers
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="customerDropdown">
+            <li><a class="dropdown-item" href="/">Show All</a></li>
+            <li><a class="dropdown-item" href="/add">Add Customer</a></li>
+          </ul>
+        </li>
+
+        <!-- Consumptions Dropdown Menu -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle fw-bold"
+            href="#"
+            id="consumptionDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Consumptions
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="consumptionDropdown">
+            <li><a class="dropdown-item" href="/consumptions">Show All</a></li>
+            <li>
+              <a class="dropdown-item" href="/consumptions/add"
+                >Add Consumptions</a
+              >
+            </li>
+          </ul>
+        </li>
+
+        <!-- Transactions Dropdown Menu -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle fw-bold"
+            href="#"
+            id="transactionDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Transactions
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="transactionDropdown">
+            <li><a class="dropdown-item" href="/transactions">Show All</a></li>
+            <li>
+              <a class="dropdown-item" href="/transactions/dailytransactions"
+                >Show Daily Transactions</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="/transactions/add"
+                >Generate Transactions</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="/transactions/singletransaction">Make Single Transactions</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Colony Form</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="stylesheet"
+      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <%- include('../navbar.html') %>
+
+    <div class="container mt-5 bg-light p-4 border rounded">
+      <h2>Add Colony</h2>
+      <form method="post" action="/colony/add">
+        <!-- Code -->
+        <div class="mb-3">
+          <label for="code" class="form-label">Colony Code</label>
+          <input
+            type="text"
+            class="form-control"
+            id="code"
+            name="code"
+            placeholder="Enter Colony Code"
+            required
+          />
+        </div>
+        <!-- Name -->
+        <div class="mb-3">
+          <label for="name" class="form-label">Colony Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            placeholder="Enter Colony Name"
+            required
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Add Colony</button>
+      </form>
+    </div>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

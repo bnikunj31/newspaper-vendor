@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add User Form</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="stylesheet"
+      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/node_modules/select2/dist/css/select2.min.css"
+    />
+    <!-- Select2 CSS -->
+  </head>
+  <body>
+    <!-- Navbar -->
+    <%- include('../navbar.html') %>
+
+    <div class="container my-5 rounded bg-light p-4">
+      <h2>Update Transaction</h2>
+      <form method="post" action="/transactions/update">
+        <input type="hidden" name="id" value="<%= data1.transaction_id %>" />
+
+        <!-- Customer ID (Dropdown with search) -->
+        <div class="mb-3">
+          <label for="customerId" class="form-label">Customer</label>
+          <select
+            class="form-select select2"
+            id="customerId"
+            name="customerId"
+            required
+            readonly
+          >
+            <option selected disabled>Select Customer</option>
+            <% data.filter(item => item.type ===
+            'Customer').forEach(function(customer) { %>
+            <option value="<%= customer.id %>" <%= data1.customerId === customer.id ? "selected" : "" %>><%= customer.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Newspaper Code (Dropdown with search) -->
+        <div class="mb-3">
+          <label for="newspaper" class="form-label">Newspaper</label>
+          <select
+            class="form-select select2"
+            id="newspaper"
+            name="newspaper"
+            required
+            readonly
+          >
+            <option selected disabled>Select Newspaper</option>
+            <% data.filter(item => item.type ===
+            'Newspaper').forEach(function(newspaper) { %>
+            <option value="<%= newspaper.id %>" <%= data1.newspaperId === newspaper.id ? "selected" : "" %> ><%= newspaper.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Days (Dropdown with search) -->
+        <div class="mb-3">
+          <label for="days" class="form-label">Days</label>
+          <select class="form-select select2" id="days" name="days" required readonly>
+            <option selected disabled>Select Days</option>
+            <% data.filter(item => item.type === 'Days').forEach(function(day) {
+            %>
+            <option value="<%= day.id %>" <%= data1.combinationId === day.id ? "selected" : "" %> ><%= day.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        
+        <!-- Price -->
+        <div class="mb-3">
+          <label for="price" class="form-label">Price</label>
+          <input
+            type="number"
+            class="form-control"
+            id="price"
+            name="price"
+            min="1"
+            placeholder="Enter price"
+            value="<%= data1.price %>"
+            required
+            readonly
+          />
+        </div>
+
+        <!-- Attendance -->
+        <div class="mb-3">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="attendance"
+            name="attendance"
+            value="1"
+            required
+            checked
+            readonly
+          />
+          <label for="attendance" class="form-label">Attendance</label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Add Consumption</button>
+      </form>
+    </div>
+
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/node_modules/select2/dist/js/select2.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $(".select2").select2();
+      });
+    </script>
+  </body>
+</html>
