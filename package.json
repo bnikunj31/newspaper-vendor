@@ -8,6 +8,18 @@
     "electron": "electron main.js",
     "package-win": "electron-packager . newspaper-vendor --platform=win32 --arch=x64 --icon=public/icon.ico --out=build --overwrite"
   },
+  "build": {
+    "appId": "your.app.id",
+    "files": [
+      "dist/**/*",
+      "public/**/*",
+      "main.js"
+    ],
+    "win": {
+      "target": "nsis",
+      "preserveTimestamps": false
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

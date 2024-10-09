@@ -1,17 +1,11 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
-const express = require("express");
+const expressApp = require("./app");
 
-const expressApp = express();
-
-expressApp.use(express.static(path.join(__dirname, "public")));
-expressApp.use(
-  "/modules",
-  express.static(path.join(__dirname, "node_modules"))
-);
+let mainWindow;
 
 function createWindow() {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -21,10 +15,20 @@ function createWindow() {
     icon: path.join(__dirname, "public", "icon.ico"),
   });
 
-  win.loadURL("http://localhost:3000");
+  mainWindow.loadURL("http://localhost:3000").catch((err) => {
+    console.error("Failed to load URL:", err);
+  });
+
+  // mainWindow.webContents.openDevTools();
+
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
@@ -33,7 +37,11 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
+  if (mainWindow === null) {
     createWindow();
   }
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
 });
