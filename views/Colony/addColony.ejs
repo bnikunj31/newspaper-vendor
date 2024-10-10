@@ -16,6 +16,17 @@
 
     <div class="container mt-5 bg-light p-4 border rounded">
       <h2>Add Colony</h2>
+      <% if (error) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span><%= error %></span>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      <% } %>
       <form method="post" action="/colony/add">
         <!-- Code -->
         <div class="mb-3">

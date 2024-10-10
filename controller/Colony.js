@@ -17,11 +17,24 @@ exports.showColonies = async (req, res) => {
 
 // Add Colony
 exports.addColonyForm = async (req, res) => {
-  res.render("Colony/addColony");
+  res.render("Colony/addColony", { error: "" });
 };
 
 exports.addColony = async (req, res) => {
   const { code, name } = req.body;
+  const codeRegex = /^[A-Za-z0-9]+$/;
+  const nameRegex = /^[A-Za-z]+$/;
+  if (
+    !codeRegex.test(code) ||
+    code.length < 2 ||
+    !nameRegex.test(name) ||
+    name.length < 3
+  ) {
+    return res.render("Colony/addColony", {
+      error:
+        "Colony code must be alphanumeric and at least 2 characters long. Colony name must contain only letters and be at least 3 characters long.",
+    });
+  }
   try {
     db.run(
       "Insert into colony (colonyCode, colonyName) VALUES (?,?)",
@@ -47,7 +60,7 @@ exports.update = async (req, res) => {
       if (err) {
         console.error("Error in Updating: ", err);
       } else {
-        res.render("Colony/updateColony", { rows: rows });
+        res.render("Colony/updateColony", { rows: rows, error: "" });
       }
     });
   } catch (err) {}
@@ -56,6 +69,9 @@ exports.update = async (req, res) => {
 exports.updateColony = async (req, res) => {
   try {
     const { code, name } = req.body;
+    if (name.length < 3) {
+      return res.redirect(`/colony/update/${code}`);
+    }
     db.run(
       "UPDATE colony SET colonyName = ? where colonyCode = ?",
       [name, code],

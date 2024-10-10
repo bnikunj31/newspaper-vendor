@@ -187,46 +187,53 @@
     <script src="/node_modules/select2/dist/js/select2.min.js"></script>
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      $(document).ready(function () {
-        $("#colonyFilter").select2();
+      document.addEventListener("DOMContentLoaded", function () {
+        const colonyFilter = document.getElementById("colonyFilter");
+        const routeFilter = document.getElementById("routeFilter");
+        const searchInput = document.getElementById("searchInput");
+        const lastActiveFilter = document.getElementById("lastActiveFilter");
+        const paidFilter = document.getElementById("paidFilter");
+        const dueFilter = document.getElementById("dueFilter");
+        const defaulterFilter = document.getElementById("defaulterFilter");
+        const userTableBody = document.getElementById("userTableBody");
+        const pagination = document.getElementById("pagination");
 
-        // Filter functionality
+        const rowsPerPage = 50;
+        let currentPage = 1;
+
         function filterTable() {
-          const colonyFilter = $("#colonyFilter").val();
-          const routeFilter = $("#routeFilter").val().toLowerCase();
-          const searchInput = $("#searchInput").val().toLowerCase();
-          const lastActiveFilter = $("#lastActiveFilter").val();
-          const paidFilter = $("#paidFilter").val();
-          const dueFilter = $("#dueFilter").val();
-          const defaulterFilter = $("#defaulterFilter").is(":checked");
+          const colonyValue = colonyFilter.value;
+          const routeValue = routeFilter.value.toLowerCase();
+          const searchValue = searchInput.value.toLowerCase();
+          const lastActiveValue = lastActiveFilter.value;
+          const paidValue = paidFilter.value;
+          const dueValue = dueFilter.value;
+          const isDefaulterChecked = defaulterFilter.checked;
 
-          // Get all rows
-          const rows = $("#userTableBody tr");
-          rows.each(function () {
-            const row = $(this);
-            const colonyText = row.find("td").eq(4).text();
-            const routeText = row.find("td").eq(7).text();
-            const nameText = row.find("td").eq(1).text();
-            const lastActiveText = row.find("td").eq(8).text();
-            const paidText = row.find("td").eq(5).text();
-            const dueText = row.find("td").eq(6).text();
-            const isDefaulter = row
-              .find("td")
-              .eq(9)
-              .find("input")
-              .is(":checked");
+          const rows = userTableBody.getElementsByTagName("tr");
+          let visibleCount = 0;
+
+          Array.from(rows).forEach((row) => {
+            const cells = row.getElementsByTagName("td");
+            const colonyText = cells[4].textContent;
+            const routeText = cells[7].textContent;
+            const nameText = cells[1].textContent;
+            const lastActiveText = cells[8].textContent;
+            const paidText = cells[5].textContent;
+            const dueText = cells[6].textContent;
+            const isDefaulter = cells[9].querySelector("input").checked;
 
             const isColonyMatch =
-              colonyFilter === "" || colonyText === colonyFilter;
-            const isRouteMatch = routeText.toLowerCase().includes(routeFilter);
-            const isNameMatch = nameText.toLowerCase().includes(searchInput);
+              colonyValue === "" || colonyText === colonyValue;
+            const isRouteMatch = routeText.toLowerCase().includes(routeValue);
+            const isNameMatch = nameText.toLowerCase().includes(searchValue);
             const isLastActiveMatch =
-              lastActiveFilter === "" ||
-              lastActiveText.includes(lastActiveFilter);
+              lastActiveValue === "" ||
+              lastActiveText.includes(lastActiveValue);
             const isPaidMatch =
-              paidFilter === "" || paidText.includes(paidFilter);
-            const isDueMatch = dueFilter === "" || dueText.includes(dueFilter);
-            const isDefaulterMatch = !defaulterFilter || isDefaulter;
+              paidValue === "" || paidText.includes(paidValue);
+            const isDueMatch = dueValue === "" || dueText.includes(dueValue);
+            const isDefaulterMatch = !isDefaulterChecked || isDefaulter;
 
             const isVisible =
               isColonyMatch &&
@@ -237,55 +244,63 @@
               isDueMatch &&
               isDefaulterMatch;
 
-            row.toggle(isVisible);
+            row.style.display = isVisible ? "" : "none";
+            if (isVisible) visibleCount++;
           });
 
-          setupPagination();
+          setupPagination(visibleCount);
         }
 
-        // Event listeners for filters
-        $("#colonyFilter").change(filterTable);
-        $("#routeFilter").on("input", filterTable);
-        $("#searchInput").on("input", filterTable);
-        $("#lastActiveFilter").on("input", filterTable);
-        $("#paidFilter").on("input", filterTable);
-        $("#dueFilter").on("input", filterTable);
-        $("#defaulterFilter").change(filterTable);
+        function setupPagination(visibleCount) {
+          const totalPages = Math.ceil(visibleCount / rowsPerPage);
+          pagination.innerHTML = "";
 
-        // Pagination logic
-        const rowsPerPage = 50;
-        let currentPage = 1;
+          for (let i = 1; i <= totalPages; i++) {
+            const pageItem = document.createElement("li");
+            pageItem.className =
+              "page-item" + (i === currentPage ? " active" : "");
+            const pageLink = document.createElement("a");
+            pageLink.className = "page-link";
+            pageLink.href = "#";
+            pageLink.textContent = i;
+
+            pageLink.addEventListener("click", function (e) {
+              e.preventDefault();
+              displayRows(i);
+            });
+
+            pageItem.appendChild(pageLink);
+            pagination.appendChild(pageItem);
+          }
+
+          displayRows(currentPage);
+        }
 
         function displayRows(page) {
           currentPage = page;
-          const visibleRows = $("#userTableBody tr:visible");
-          visibleRows.each(function (index) {
-            $(this).toggle(
+          const rows = userTableBody.getElementsByTagName("tr");
+          const visibleRows = Array.from(rows).filter(
+            (row) => row.style.display !== "none"
+          );
+
+          visibleRows.forEach((row, index) => {
+            row.style.display =
               index < rowsPerPage * page && index >= rowsPerPage * (page - 1)
-            );
+                ? ""
+                : "none";
           });
         }
 
-        function setupPagination() {
-          const visibleRows = $("#userTableBody tr:visible").length;
-          const totalPages = Math.ceil(visibleRows / rowsPerPage);
-          $("#pagination").empty();
-          for (let i = 1; i <= totalPages; i++) {
-            $("#pagination").append(
-              `<li class="page-item ${i === currentPage ? "active" : ""}">
-                <a class="page-link" href="#">${i}</a>
-              </li>`
-            );
-          }
-        }
+        // Event listeners for filters
+        colonyFilter.addEventListener("change", filterTable);
+        routeFilter.addEventListener("input", filterTable);
+        searchInput.addEventListener("input", filterTable);
+        lastActiveFilter.addEventListener("input", filterTable);
+        paidFilter.addEventListener("input", filterTable);
+        dueFilter.addEventListener("input", filterTable);
+        defaulterFilter.addEventListener("change", filterTable);
 
-        $("#pagination").on("click", "a", function (e) {
-          e.preventDefault();
-          const page = parseInt($(this).text());
-          displayRows(page);
-        });
-
-        filterTable();
+        filterTable(); // Initial filter setup
       });
     </script>
   </body>

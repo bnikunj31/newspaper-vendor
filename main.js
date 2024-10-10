@@ -13,11 +13,14 @@ function createWindow() {
       contextIsolation: false,
     },
     icon: path.join(__dirname, "public", "icon.ico"),
+    autoHideMenuBar: true,
   });
+  mainWindow.maximize();
 
   mainWindow.loadURL("http://localhost:3000").catch((err) => {
     console.error("Failed to load URL:", err);
   });
+const express = require(path.join(__dirname, "node_modules", "express"));
 
   // mainWindow.webContents.openDevTools();
 

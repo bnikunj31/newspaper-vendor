@@ -18,7 +18,7 @@ exports.showDays = async (req, res) => {
 // Add Days Combinations
 exports.addDaysForm = async (req, res) => {
   try {
-    res.render("Days/addDays");
+    res.render("Days/addDays", { error: "" });
   } catch (err) {
     console.error("Error in Displaying Form: ", err);
   }
@@ -27,6 +27,11 @@ exports.addDaysForm = async (req, res) => {
 exports.addDays = async (req, res) => {
   try {
     const { days } = req.body;
+    if (!Array.isArray(days) || days.length === 0) {
+      return res.render("Days/addDays", {
+        error: "Select at least 1 day.",
+      });
+    }
     const data = days.join(", ");
     db.run("Insert into days (combinationDays) Values (?)", [data], (err) => {
       if (err) {

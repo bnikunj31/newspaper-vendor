@@ -46,7 +46,6 @@
             <input
               class="form-check-input"
               type="checkbox"
-              value=""
               id="statusCheckbox"
             />
             <label class="form-check-label" for="statusCheckbox">
@@ -76,7 +75,7 @@
             <td><%= row.consumptionId %></td>
             <td><%= row.customerName %></td>
             <td><%= row.newspaperName %></td>
-            <td><%= row.combinationDays%></td>
+            <td><%= row.combinationDays %></td>
             <td>
               <input type="checkbox" class="form-check-input custom-checkbox"
               name="status" <%= row.isActive == 1 ? "checked" : "" %>
@@ -88,14 +87,14 @@
                 class="btn btn-sm btn-outline-warning"
                 >Update</a
               >
-              <% if(row.disable == 0 ) { %>
+              <% if (row.disable == 0) { %>
               <a
                 href="#"
                 class="btn btn-sm btn-outline-dark"
                 onclick="showModal('Disable', '/consumptions/disable/<%= row.consumptionId %>')"
                 >Disable</a
               >
-              <% } else{ %>
+              <% } else { %>
               <a
                 href="#"
                 class="btn btn-sm btn-outline-success"
@@ -158,36 +157,42 @@
 
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // Search and filter functionality
+      // Search functionality
       const searchInput = document.getElementById("searchInput");
       const statusCheckbox = document.getElementById("statusCheckbox");
+      const rows = document.querySelectorAll("#userTableBody tr");
 
       function filterRows() {
         const filter = searchInput.value.toLowerCase();
         const isStatusChecked = statusCheckbox.checked;
-        const rows = document.querySelectorAll("#userTableBody tr");
 
         rows.forEach((row) => {
-          const name = row.cells[1].textContent.toLowerCase();
-          const newspaperName = row.cells[2].textContent.toLowerCase();
-          const status = row.querySelector("input[name='status']").checked;
+          const name = row
+            .querySelector("td:nth-child(2)")
+            .textContent.toLowerCase();
+          const newspaperName = row
+            .querySelector("td:nth-child(3)")
+            .textContent.toLowerCase();
+          const status = row.querySelector("td:nth-child(5) input").checked;
 
           const matchesSearch =
             name.includes(filter) || newspaperName.includes(filter);
-          const matchesStatus = !isStatusChecked || status === isStatusChecked;
+          const matchesStatus = !isStatusChecked || status;
 
-          row.style.display = matchesSearch && matchesStatus ? "" : "none";
+          if (matchesSearch && matchesStatus) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
         });
       }
 
-      // Add event listeners for search input and status checkbox
       searchInput.addEventListener("keyup", filterRows);
       statusCheckbox.addEventListener("change", filterRows);
 
       // Pagination
       const rowsPerPage = 50;
       let currentPage = 1;
-      const rows = document.querySelectorAll("#userTableBody tr");
       const pagination = document.getElementById("pagination");
 
       function displayRows(page) {
@@ -208,12 +213,12 @@
           const li = document.createElement("li");
           li.classList.add("page-item");
           li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-          li.addEventListener("click", function (e) {
+          li.addEventListener("click", (e) => {
             e.preventDefault();
             displayRows(i);
-            document
-              .querySelectorAll(".page-item")
-              .forEach((item) => item.classList.remove("active"));
+            document.querySelectorAll(".page-item").forEach((item) => {
+              item.classList.remove("active");
+            });
             li.classList.add("active");
           });
           if (i === currentPage) {
@@ -227,34 +232,12 @@
       function showModal(action, url) {
         document.getElementById("modalAction").textContent =
           action.toLowerCase();
-        document.getElementById("confirmButton").setAttribute("href", url);
+        document.getElementById("confirmButton").href = url;
         const modal = new bootstrap.Modal(
           document.getElementById("confirmModal")
         );
         modal.show();
       }
-
-      // Sorting functionality
-      const headers = document.querySelectorAll("th[data-sort]");
-      headers.forEach((header) => {
-        header.addEventListener("click", () => {
-          const sortKey = header.getAttribute("data-sort");
-          const sortedRows = Array.from(rows).sort((a, b) => {
-            const valA = a
-              .querySelector(`td:nth-child(${header.cellIndex + 1})`)
-              .textContent.trim();
-            const valB = b
-              .querySelector(`td:nth-child(${header.cellIndex + 1})`)
-              .textContent.trim();
-            return isNaN(valA) || isNaN(valB)
-              ? valA.localeCompare(valB)
-              : parseFloat(valA) - parseFloat(valB);
-          });
-          sortedRows.forEach((row) =>
-            document.querySelector("#userTableBody").appendChild(row)
-          );
-        });
-      });
 
       // Initial setup
       displayRows(1);

@@ -6,14 +6,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app",
     "electron": "electron main.js",
-    "package-win": "electron-packager . newspaper-vendor --platform=win32 --arch=x64 --icon=public/icon.ico --out=build --overwrite"
+    "package-win": "electron-packager . newspaper-vendor --platform=win32 --arch=x64 --icon=public/icon.ico --out=build --overwrite",
+    "rebuild": "electron-rebuild"
   },
   "build": {
     "appId": "your.app.id",
     "files": [
       "dist/**/*",
       "public/**/*",
-      "main.js"
+      "main.js",
+      "node_modules/**/*"
     ],
     "win": {
       "target": "nsis",
@@ -26,10 +28,12 @@
   "description": "A desktop application for newspaper vending",
   "dependencies": {
     "bootstrap": "^5.3.3",
+    "connect-flash": "^0.1.1",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "electron-packager": "^17.1.2",
     "express": "^4.21.0",
+    "express-session": "^1.18.1",
     "jquery": "^3.7.1",
     "node-cron": "^3.0.3",
     "nodemon": "^3.1.7",
@@ -38,6 +42,7 @@
     "view-engine": "^1.1.1"
   },
   "devDependencies": {
-    "electron": "^32.1.2"
+    "electron": "^32.1.2",
+    "electron-rebuild": "^3.2.9"
   }
 }
