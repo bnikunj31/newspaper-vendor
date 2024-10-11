@@ -9,6 +9,14 @@
       rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
+    <style>
+      .error {
+        color: red;
+        font-weight: 500;
+        letter-spacing: 2px;
+        font-family: sans-serif;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -39,6 +47,7 @@
             placeholder="Enter Colony Code"
             required
           />
+          <span class="error"></span>
         </div>
         <!-- Name -->
         <div class="mb-3">
@@ -51,12 +60,53 @@
             placeholder="Enter Colony Name"
             required
           />
+          <span class="error"></span>
         </div>
-
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary">Add Colony</button>
+        <button
+          type="submit"
+          disabled="true"
+          id="submit"
+          class="btn btn-primary"
+        >
+          Add Colony
+        </button>
       </form>
     </div>
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const code = document.getElementById("code");
+      const name = document.getElementById("name");
+      const submitButton = document.getElementById("submit");
+
+      code.addEventListener("keyup", () => {
+        const value = code.value;
+        if (!value) {
+          document.getElementsByClassName("error")[0].textContent =
+            "Colony Code can't be empty!";
+        } else if (value.length < 2) {
+          document.getElementsByClassName("error")[0].textContent =
+            "Colony Code must contain atleast 2 characters";
+        } else {
+          document.getElementsByClassName("error")[0].textContent = "";
+          submitButton.disabled = false;
+        }
+      });
+      name.addEventListener("keyup", () => {
+        const value = name.value;
+        if (!value) {
+          document.getElementsByClassName("error")[1].textContent =
+            "Colony Name can't be empty!";
+          submitButton.disabled = "true";
+        } else if (value.length < 5) {
+          document.getElementsByClassName("error")[1].textContent =
+            "Colony Name must contain atleast 5 characters";
+          submitButton.disabled = "true";
+        } else {
+          document.getElementsByClassName("error")[1].textContent = "";
+          submitButton.disabled = false;
+        }
+      });
+    </script>
   </body>
 </html>

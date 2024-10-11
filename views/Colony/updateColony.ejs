@@ -9,6 +9,14 @@
       rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
+    <style>
+      .error {
+        color: red;
+        font-weight: 500;
+        letter-spacing: 2px;
+        font-family: sans-serif;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -43,13 +51,36 @@
             value="<%= rows.colonyName %>"
             required
           />
+          <span class="error"></span>
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary">Update Colony</button>
+        <button type="submit" id="submit" class="btn btn-primary">
+          Update Colony
+        </button>
       </form>
     </div>
 
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const name = document.getElementById("name");
+      const submitButton = document.getElementById("submit");
+
+      name.addEventListener("keyup", () => {
+        const value = name.value;
+        if (!value) {
+          document.getElementsByClassName("error")[0].textContent =
+            "Colony Name can't be empty!";
+          submitButton.disabled = "true";
+        } else if (value.length < 5) {
+          document.getElementsByClassName("error")[0].textContent =
+            "Colony Name must contain atleast 5 characters";
+          submitButton.disabled = "true";
+        } else {
+          document.getElementsByClassName("error")[0].textContent = "";
+          submitButton.disabled = false;
+        }
+      });
+    </script>
   </body>
 </html>

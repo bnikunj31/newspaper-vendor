@@ -9,6 +9,14 @@
       rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
+    <style>
+      .error {
+        color: red;
+        font-weight: 500;
+        letter-spacing: 2px;
+        font-family: sans-serif;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -16,17 +24,6 @@
 
     <div class="container my-5 bg-light p-4 border rounded">
       <h2>Add Newspaper</h2>
-      <% if (error && error.length > 0) { %>
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span><%= error %></span>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
-      </div>
-      <% } %>
       <form method="post" action="/newspaper/add">
         <!-- Code -->
         <div class="mb-3">
@@ -39,6 +36,7 @@
             placeholder="Enter code"
             required
           />
+          <span class="error"></span>
         </div>
 
         <!-- Name -->
@@ -52,6 +50,7 @@
             placeholder="Enter name"
             required
           />
+          <span class="error"></span>
         </div>
 
         <!-- Price -->
@@ -66,6 +65,7 @@
             placeholder="Enter price"
             required
           />
+          <span class="error"></span>
         </div>
 
         <!-- Available -->
@@ -79,6 +79,7 @@
             required
             checked
           />
+          <span class="error"></span>
           <label for="available" class="form-label">Active</label>
         </div>
 
@@ -93,12 +94,72 @@
             </option>
             <% }) %>
           </select>
+          <span class="error"></span>
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary">Add Newspaper</button>
+        <button type="submit" id="submit" class="btn btn-primary">
+          Add Newspaper
+        </button>
       </form>
     </div>
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.querySelector("form").addEventListener("submit", function (e) {
+        const code = document.getElementById("code").value;
+        const name = document.getElementById("name").value;
+        const price = document.getElementById("price").value;
+        const available = document.getElementById("available").checked;
+        const days = document.getElementById("days").value;
+        const errorElements = document.querySelectorAll(".error");
+        const namePattern = /^[a-zA-Z]+$/;
+
+        let isValid = true;
+
+        if (!code) {
+          errorElements[0].textContent = "Newspaper Code can't be empty!";
+          isValid = false;
+        } else if (code.length < 2) {
+          errorElements[0].textContent =
+            "Newspaper Code must contain atleast 2 characters";
+          isValid = false;
+        } else {
+          errorElements[0].textContent = "";
+        }
+
+        if (!name) {
+          errorElements[1].textContent = "Newspaper Name can't be empty!";
+          isValid = false;
+        } else if (name.length < 5) {
+          errorElements[1].textContent =
+            "Newspaper Name must contains 5 alphabets";
+          isValid = false;
+        } else if (namePattern.test(name)) {
+          errorElements[1].textContent =
+            "Newspaper Name must contains only alphabets";
+          isValid = false;
+        } else {
+          errorElements[1].textContent = "";
+        }
+
+        if (!price) {
+          errorElements[2].textContent = "Price can't be empty!";
+          isValid = false;
+        } else {
+          errorElements[2].textContent = "";
+        }
+
+        if (!days || days === "Select Combination") {
+          errorElements[4].textContent = "Please select a combination.";
+          isValid = false;
+        } else {
+          errorElements[4].textContent = "";
+        }
+
+        if (!isValid) {
+          e.preventDefault();
+        }
+      });
+    </script>
   </body>
 </html>

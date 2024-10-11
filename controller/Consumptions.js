@@ -52,25 +52,6 @@ exports.addConsumptionForm = async (req, res) => {
 exports.addConsumption = async (req, res) => {
   try {
     const { colony, customerId, newspaperId, days } = req.body;
-    if (!colony || colony.length < 1) {
-      req.flash("error", "Colony is required.");
-      return res.redirect("/consumptions/add");
-    }
-
-    if (!customerId || customerId.length < 1) {
-      req.flash("error", "Customer is required.");
-      return res.redirect("/consumptions/add");
-    }
-
-    if (!newspaperId || newspaperId.length < 1) {
-      req.flash("error", "Newspaper is required.");
-      return res.redirect("/consumptions/add");
-    }
-
-    if (!Array.isArray(days) || days.length === 0) {
-      req.flash("error", "Select at least 1 day.");
-      return res.redirect("/consumptions/add");
-    }
     db.run(
       "Insert into consumption (colonyCode, customerId, newspaperId, combinations) VALUES (?,?,?,?)",
       [colony, customerId, newspaperId, days],

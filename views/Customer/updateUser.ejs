@@ -4,11 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Update User Form</title>
-    <link
-      rel="stylesheet"
-      href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
-    />
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .error {
+        color: red;
+        font-weight: 500;
+        letter-spacing: 2px;
+        font-family: sans-serif;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -16,117 +21,124 @@
 
     <div class="container my-5 rounded-3 bg-light p-5">
       <h2>Update User</h2>
-      <form method="post" action="/update">
+      <form method="post" action="/update" id="userForm">
         <!-- ID -->
         <div class="mb-3">
-          <input
-            type="hidden"
-            class="form-control"
-            id="id"
-            name="id"
-            placeholder="Enter name"
-            value="<%= data.customerId%>"
-            required
-          />
+          <input type="hidden" class="form-control" id="id" name="id" value="<%= data.customerId%>" required />
         </div>
 
         <!-- Name -->
         <div class="mb-3">
           <label for="name" class="form-label">Name</label>
-          <input
-            type="text"
-            class="form-control"
-            id="name"
-            name="name"
-            placeholder="Enter name"
-            value="<%= data.customerName %>"
-            required
-          />
+          <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" value="<%= data.customerName %>" required />
+          <span class="error"></span>
         </div>
 
         <!-- Contact Number -->
         <div class="mb-3">
           <label for="contactNumber" class="form-label">Contact Number</label>
-          <input
-            type="tel"
-            class="form-control"
-            id="contactumber"
-            name="contact_number"
-            placeholder="Enter contact number"
-            value="<%= data.contactNumber %>"
-            required
-          />
+          <input type="tel" class="form-control" id="contactnumber" name="contact_number" placeholder="Enter contact number" value="<%= data.contactNumber %>" required />
+          <span class="error"></span>
         </div>
 
         <!-- Address -->
         <div class="mb-3">
           <label for="address" class="form-label">Address</label>
-          <input
-            type="text"
-            class="form-control"
-            id="address"
-            name="address"
-            placeholder="Enter address"
-            value="<%= data.address %>"
-            required
-          />
+          <input type="text" class="form-control" id="address" name="address" placeholder="Enter address" value="<%= data.address %>" required />
+          <span class="error"></span>
         </div>
 
         <!-- Colony (Dropdown populated from database) -->
         <div class="mb-3">
           <label for="colony" class="form-label">Colony</label>
           <select class="form-select" id="colony" name="colony" required>
-            <% colonies.forEach(function(colony){ %>
-            <option value="<%= colony.colonyName %>" 
-              <%= colony.colonyName.trim().toLowerCase() === data.colony.trim().toLowerCase() ? "selected" : "" %>>
-              <%= colony.colonyName %></option>
+            <% colonies.forEach(function(colony) { %>
+            <option value="<%= colony.colonyName %>" <%= colony.colonyName.trim().toLowerCase() === data.colony.trim().toLowerCase() ? "selected" : "" %>> <%= colony.colonyName %></option>
             <% }) %>
           </select>
+          <span class="error"></span>
         </div>
 
         <!-- Paid -->
         <div class="mb-3">
           <label for="paid" class="form-label">Paid</label>
-          <input
-            type="number"
-            class="form-control"
-            id="paid"
-            name="paid"
-            placeholder="Enter paid amount"
-            value="<%= data.paid %>"
-          />
+          <input type="number" class="form-control" id="paid" name="paid" placeholder="Enter paid amount" value="<%= data.paid %>" />
         </div>
 
         <!-- Due -->
         <div class="mb-3">
           <label for="due" class="form-label">Due</label>
-          <input
-            type="number"
-            class="form-control"
-            id="due"
-            name="due"
-            placeholder="Enter due amount"
-            value="<%= data.due %>"
-            value="0"
-          />
+          <input type="number" class="form-control" id="due" name="due" placeholder="Enter due amount" value="<%= data.due %>" value="0" />
         </div>
 
         <!-- Route -->
         <div class="mb-3">
           <label for="route" class="form-label">Route</label>
-          <input
-            type="number"
-            class="form-control"
-            id="route"
-            name="route"
-            value="<%= data.route %>"
-          />
+          <input type="number" class="form-control" id="route" name="route" value="<%= data.route %>" />
+          <span class="error"></span>
         </div>
+
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary">Update User</button>
       </form>
     </div>
 
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.getElementById("userForm").addEventListener("submit", function (e) {
+        const name = document.getElementById("name").value.trim();
+        const contactNumber = document.getElementById("contactnumber").value.trim();
+        const address = document.getElementById("address").value.trim();
+        const colony = document.getElementById("colony").value;
+        const errorElements = document.querySelectorAll(".error");
+        const namePattern = /^[a-zA-Z\s]+$/;
+        const contactPattern = /^\d{10}$/;
+
+        let isValid = true;
+
+        // Validate Name
+        if (!name) {
+          errorElements[0].textContent = "Name can't be empty!";
+          isValid = false;
+        } else if (!namePattern.test(name)) {
+          errorElements[0].textContent = "Name must contain only alphabets and spaces.";
+          isValid = false;
+        } else {
+          errorElements[0].textContent = "";
+        }
+
+        // Validate Contact Number
+        if (!contactNumber) {
+          errorElements[1].textContent = "Contact Number can't be empty!";
+          isValid = false;
+        } else if (!contactPattern.test(contactNumber)) {
+          errorElements[1].textContent = "Contact Number must be a 10-digit number.";
+          isValid = false;
+        } else {
+          errorElements[1].textContent = "";
+        }
+
+        // Validate Address
+        if (!address) {
+          errorElements[2].textContent = "Address can't be empty!";
+          isValid = false;
+        } else {
+          errorElements[2].textContent = "";
+        }
+
+        // Validate Colony
+        if (!colony || colony === "Select colony") {
+          errorElements[3].textContent = "Please select a colony.";
+          isValid = false;
+        } else {
+          errorElements[3].textContent = "";
+        }
+
+        if (!isValid) {
+          e.preventDefault();
+        }
+      });
+    </script>
   </body>
 </html>
+  

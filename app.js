@@ -1,8 +1,6 @@
 //  Packages
 const express = require("express");
 const path = require("path");
-const flash = require("connect-flash");
-const session = require("express-session");
 const transactionScheduler = require("./transactionScheduler");
 const moneyScheduler = require("./monthlyTransaction");
 const cron = require("./routes/cronJob");
@@ -19,20 +17,6 @@ const transactions = require("./routes/Transactions");
 //  Server
 const app = express();
 const port = 3000;
-
-app.use(
-  session({
-    secret: "shhhhh",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-app.use(flash());
-app.use((req, res, next) => {
-  console.log(req.flash('error'));
-  res.locals.error = req.flash("error");
-  next();
-});
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));

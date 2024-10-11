@@ -9,6 +9,14 @@
       rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
+    <style>
+      .error {
+        color: red;
+        font-weight: 500;
+        letter-spacing: 2px;
+        font-family: sans-serif;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -120,7 +128,8 @@
               value="Special"
             />
             <label class="form-check-label" for="special">Special</label>
-          </div>
+          </div><br>
+          <span class="error"></span>
         </div>
 
         <!-- Submit Button -->
@@ -128,5 +137,25 @@
       </form>
     </div>
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.querySelector("form").addEventListener("submit", function (e) {
+        const checkboxes = document.querySelectorAll('input[name="days[]"]');
+        const errorElement = document.querySelector(".error");
+        let isChecked = false;
+
+        checkboxes.forEach((checkbox) => {
+          if (checkbox.checked) {
+            isChecked = true;
+          }
+        });
+
+        if (!isChecked) {
+          e.preventDefault();
+          errorElement.textContent = "Please select at least one day.";
+        } else {
+          errorElement.textContent = "";
+        }
+      });
+    </script>
   </body>
 </html>

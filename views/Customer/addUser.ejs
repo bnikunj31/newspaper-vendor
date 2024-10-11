@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Add User Form</title>
     <link rel="stylesheet" href="/styles.css" />
-
     <link
       rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
+    <style>
+      .error {
+        color: red;
+        font-weight: 500;
+        letter-spacing: 2px;
+        font-family: sans-serif;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -17,7 +24,7 @@
 
     <div class="container my-5 rounded bg-light p-4">
       <h2>Add User</h2>
-      <form method="post" action="/add">
+      <form method="post" action="/add" id="userForm">
         <!-- Name -->
         <div class="mb-3">
           <label for="name" class="form-label">Name</label>
@@ -29,6 +36,7 @@
             placeholder="Enter name"
             required
           />
+          <span class="error"></span>
         </div>
 
         <!-- Contact Number -->
@@ -37,11 +45,12 @@
           <input
             type="tel"
             class="form-control"
-            id="contactumber"
+            id="contactNumber"
             name="contact_number"
             placeholder="Enter contact number"
             required
           />
+          <span class="error"></span>
         </div>
 
         <!-- Address -->
@@ -55,6 +64,7 @@
             placeholder="Enter address"
             required
           />
+          <span class="error"></span>
         </div>
 
         <!-- Colony (Dropdown populated from database) -->
@@ -63,8 +73,7 @@
           <div class="d-flex align-items-center gap-1">
             <select class="form-select" id="colony" name="colony" required>
               <option selected disabled>Select colony</option>
-
-              <% rows.forEach(function(row) {%>
+              <% rows.forEach(function(row) { %>
               <option value="<%= row.colonyName %>">
                 <%= row.colonyName %>
               </option>
@@ -72,6 +81,7 @@
             </select>
             <a href="/colony/add" class="btn btn-light fs-5 fw-bold">+</a>
           </div>
+          <span class="error"></span>
         </div>
 
         <!-- Paid -->
@@ -108,8 +118,10 @@
             class="form-control"
             id="route"
             name="route"
+            min="1"
             placeholder="Enter route"
           />
+          <span class="error"></span>
         </div>
 
         <!-- Submit Button -->
@@ -118,5 +130,66 @@
     </div>
 
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document
+        .getElementById("userForm")
+        .addEventListener("submit", function (e) {
+          const name = document.getElementById("name").value.trim();
+          const contactNumber = document
+            .getElementById("contactNumber")
+            .value.trim();
+          const address = document.getElementById("address").value.trim();
+          const colony = document.getElementById("colony").value;
+          const errorElements = document.querySelectorAll(".error");
+          const namePattern = /^[a-zA-Z\s]+$/;
+          const contactPattern = /^\d{10}$/;
+
+          let isValid = true;
+
+          // Validate Name
+          if (!name) {
+            errorElements[0].textContent = "Name can't be empty!";
+            isValid = false;
+          } else if (!namePattern.test(name)) {
+            errorElements[0].textContent =
+              "Name must contain only alphabets and spaces.";
+            isValid = false;
+          } else {
+            errorElements[0].textContent = "";
+          }
+
+          // Validate Contact Number
+          if (!contactNumber) {
+            errorElements[1].textContent = "Contact Number can't be empty!";
+            isValid = false;
+          } else if (!contactPattern.test(contactNumber)) {
+            errorElements[1].textContent =
+              "Contact Number must be a 10-digit number.";
+            isValid = false;
+          } else {
+            errorElements[1].textContent = "";
+          }
+
+          // Validate Address
+          if (!address) {
+            errorElements[2].textContent = "Address can't be empty!";
+            isValid = false;
+          } else {
+            errorElements[2].textContent = "";
+          }
+
+          // Validate Colony
+          if (!colony || colony === "Select colony") {
+            errorElements[3].textContent = "Please select a colony.";
+            isValid = false;
+          } else {
+            errorElements[3].textContent = "";
+          }
+
+          if (!isValid) {
+            e.preventDefault();
+          }
+        });
+    </script>
   </body>
 </html>

@@ -9,6 +9,14 @@
       rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
+    <style>
+      .error {
+        color: red;
+        font-weight: 500;
+        letter-spacing: 2px;
+        font-family: sans-serif;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -18,12 +26,8 @@
       <h2>Add Newspaper</h2>
       <form method="post" action="/newspaper/update">
         <!-- Id -->
-        <input
-          type="hidden"
-          name="id"
-          id="id"
-          value="<%= rows.newspaperId %>"
-        />
+        <input type="hidden" name="id" id="id" value="<%= rows.newspaperId %>"/>
+        
         <!-- Code -->
         <div class="mb-3">
           <label for="code" class="form-label">Newspaper Code</label>
@@ -37,6 +41,7 @@
             required
             readonly
           />
+          <span class="error"></span>
         </div>
 
         <!-- Name -->
@@ -51,9 +56,10 @@
             value="<%= rows.newspaperName %>"
             required
           />
+          <span class="error"></span>
         </div>
 
-        <!-- Contact Number -->
+        <!-- Price -->
         <div class="mb-3">
           <label for="price" class="form-label">Price</label>
           <input
@@ -66,9 +72,10 @@
             value="<%= rows.price %>"
             required
           />
+          <span class="error"></span>
         </div>
 
-        <!-- Address -->
+        <!-- Available -->
         <div class="mb-3">
           <input
             type="checkbox"
@@ -87,7 +94,7 @@
           <label for="days" class="form-label">Combinations</label>
           <select class="form-select" id="days" name="days[]" required>
             <option selected disabled>Select Combination</option>
-            <% data.forEach(function(row) {%>
+            <% data.forEach(function(row) { %>
             <option
               value="<%= row.combinationDays %>"
               <%= row.combinationDays === rows.combinationDays ? 'selected' : '' %>
@@ -96,12 +103,76 @@
             </option>
             <% }) %>
           </select>
+          <span class="error"></span>
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary">Update Newspaper</button>
+        <button type="submit" id="submit" class="btn btn-primary">Update Newspaper</button>
       </form>
     </div>
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.querySelector("form").addEventListener("submit", function (e) {
+        const code = document.getElementById("code").value.trim();
+        const name = document.getElementById("name").value.trim();
+        const price = document.getElementById("price").value;
+        const available = document.getElementById("available").checked;
+        const days = document.getElementById("days").value;
+        const errorElements = document.querySelectorAll(".error");
+        const codePattern = /^[a-zA-Z0-9]+$/;
+        const namePattern = /^[a-zA-Z\s]+$/;
+
+
+        let isValid = true;
+
+        // Check Code
+        if (!code) {
+          errorElements[0].textContent = "Newspaper Code can't be empty!";
+          isValid = false;
+        } else if (!codePattern.test(code)) {
+          errorElements[0].textContent = "Newspaper Code must contain only alphabets and numbers.";
+          isValid = false;
+        } else if (code.length < 2) {
+          errorElements[0].textContent = "Newspaper Code must contain at least 2 characters.";
+          isValid = false;
+        } else {
+          errorElements[0].textContent = "";
+        }
+
+        // Check Name
+        if (!name) {
+          errorElements[1].textContent = "Newspaper Name can't be empty!";
+          isValid = false;
+        } else if (!namePattern.test(name)) {
+          errorElements[1].textContent = "Newspaper Name must contain only alphabets.";
+          isValid = false;
+        } else if (name.length < 5) {
+          errorElements[1].textContent = "Newspaper Name must contain at least 5 characters.";
+          isValid = false;
+        } else {
+          errorElements[1].textContent = "";
+        }
+
+        // Check Price
+        if (!price) {
+          errorElements[2].textContent = "Price can't be empty!";
+          isValid = false;
+        } else {
+          errorElements[2].textContent = "";
+        }
+
+        // Check Days
+        if (!days || days === "Select Combination") {
+          errorElements[3].textContent = "Please select a combination.";
+          isValid = false;
+        } else {
+          errorElements[3].textContent = "";
+        }
+
+        if (!isValid) {
+          e.preventDefault();
+        }
+      });
+    </script>
   </body>
 </html>

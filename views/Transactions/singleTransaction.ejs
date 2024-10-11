@@ -13,7 +13,14 @@
       rel="stylesheet"
       href="/node_modules/select2/dist/css/select2.min.css"
     />
-    <!-- Select2 CSS -->
+    <style>
+      .error {
+        color: red;
+        font-weight: 500;
+        letter-spacing: 2px;
+        font-family: sans-serif;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -24,7 +31,7 @@
       <form
         method="post"
         action="/transactions/singletransaction"
-        onsubmit="formatDate()"
+        onsubmit="return validateForm(); formatDate();"
       >
         <!-- Colony (Dropdown with search) -->
         <div class="mb-3">
@@ -35,7 +42,7 @@
             name="colony"
             required
           >
-            <option selected disabled>Select colony</option>
+            <option value="" selected disabled>Select colony</option>
             <% data.filter(item => item.type ===
             'Colony').forEach(function(colony) { %>
             <option value="<%= colony.id %>">
@@ -43,6 +50,7 @@
             </option>
             <% }) %>
           </select>
+          <span id="colonyError" class="error"></span>
         </div>
 
         <!-- Customer ID (Dropdown with search) -->
@@ -54,12 +62,13 @@
             name="customerId"
             required
           >
-            <option selected disabled>Select Customer</option>
+            <option value="" selected disabled>Select Customer</option>
             <% data.filter(item => item.type ===
             'Customer').forEach(function(customer) { %>
             <option value="<%= customer.id %>"><%= customer.name %></option>
             <% }) %>
           </select>
+          <span id="customerError" class="error"></span>
         </div>
 
         <!-- Newspaper Code (Dropdown with search) -->
@@ -71,12 +80,13 @@
             name="newspaperCode"
             required
           >
-            <option selected disabled>Select Newspaper</option>
+            <option value="" selected disabled>Select Newspaper</option>
             <% data.filter(item => item.type ===
             'Newspaper').forEach(function(newspaper) { %>
             <option value="<%= newspaper.id %>"><%= newspaper.name %></option>
             <% }) %>
           </select>
+          <span id="newspaperError" class="error"></span>
         </div>
 
         <!-- Price -->
@@ -91,18 +101,20 @@
             placeholder="Enter price"
             required
           />
+          <span id="priceError" class="error"></span>
         </div>
 
         <!-- Days (Dropdown with search) -->
         <div class="mb-3">
           <label for="days" class="form-label">Days</label>
           <select class="form-select select2" id="days" name="days" required>
-            <option selected disabled>Select Days</option>
+            <option value="" selected disabled>Select Days</option>
             <% data.filter(item => item.type === 'Days').forEach(function(day) {
             %>
             <option value="<%= day.id %>"><%= day.name %></option>
             <% }) %>
           </select>
+          <span id="daysError" class="error"></span>
         </div>
 
         <!-- Date (Date input field) -->
@@ -115,6 +127,7 @@
             class="form-control"
             required
           />
+          <span id="dateError" class="error"></span>
         </div>
 
         <!-- Submit Button -->
@@ -130,6 +143,75 @@
         $(".select2").select2();
       });
 
+      // Custom validation for form
+      function validateForm() {
+        let isValid = true;
+
+        // Get form fields
+        const colony = document.getElementById("colony");
+        const customerId = document.getElementById("customerId");
+        const newspaperCode = document.getElementById("newspaperCode");
+        const price = document.getElementById("price");
+        const days = document.getElementById("days");
+        const date = document.getElementById("date");
+
+        // Error spans
+        const colonyError = document.getElementById("colonyError");
+        const customerError = document.getElementById("customerError");
+        const newspaperError = document.getElementById("newspaperError");
+        const priceError = document.getElementById("priceError");
+        const daysError = document.getElementById("daysError");
+        const dateError = document.getElementById("dateError");
+
+        // Reset error messages
+        colonyError.textContent = "";
+        customerError.textContent = "";
+        newspaperError.textContent = "";
+        priceError.textContent = "";
+        daysError.textContent = "";
+        dateError.textContent = "";
+
+        // Validate Colony
+        if (colony.value === "" || colony.value === null) {
+          colonyError.textContent = "Please select a colony.";
+          isValid = false;
+        }
+
+        // Validate Customer
+        if (customerId.value === "" || customerId.value === null) {
+          customerError.textContent = "Please select a customer.";
+          isValid = false;
+        }
+
+        // Validate Newspaper
+        if (newspaperCode.value === "" || newspaperCode.value === null) {
+          newspaperError.textContent = "Please select a newspaper.";
+          isValid = false;
+        }
+
+        // Validate Price
+        if (!price.value || price.value <= 0) {
+          priceError.textContent = "Please enter a valid price.";
+          isValid = false;
+        }
+
+        // Validate Days
+        if (days.value === "" || days.value === null) {
+          daysError.textContent = "Please select days.";
+          isValid = false;
+        }
+
+        // Validate Date
+        if (!date.value) {
+          dateError.textContent = "Please select a date.";
+          isValid = false;
+        }
+
+        // Prevent form submission if validation fails
+        return isValid;
+      }
+
+      // Format the date to YYYY-MM-DD before submitting the form
       function formatDate() {
         const dateInput = document.getElementById("date");
         const dateValue = new Date(dateInput.value);

@@ -25,10 +25,8 @@ exports.addNewspaperForm = async (req, res) => {
       if (err) {
         console.error("Error fetching Newspapers: ", err);
       } else {
-        console.log(req.flash("error"));
-        res.render("Newspaper/addNewspaper", {
+          res.render("Newspaper/addNewspaper", {
           rows: rows,
-          error: req.flash("error"),
         });
       }
     });
@@ -40,37 +38,6 @@ exports.addNewspaperForm = async (req, res) => {
 exports.addNewspaper = async (req, res) => {
   try {
     const { code, name, price, available, days } = req.body;
-    const codeRegex = /^[A-Za-z0-9]{2,}$/;
-    const nameRegex = /^[A-Za-z]{3,}$/;
-    const priceRegex = /^[0-9]+(\.[0-9]{1,2})?$/;
-    if (!codeRegex.test(code)) {
-      req.flash(
-        "error",
-        "Newspaper code must be at least 2 alphanumeric characters."
-      );
-      return res.redirect("/newspaper/add");
-    }
-
-    if (!nameRegex.test(name)) {
-      req.flash(
-        "error",
-        "Newspaper name must be at least 3 alphabetic characters."
-      );
-      return res.redirect("/newspaper/add");
-    }
-
-    if (!price || !priceRegex.test(price)) {
-      req.flash(
-        "error",
-        "Newspaper price must be a valid number and can't be empty."
-      );
-      return res.redirect("/newspaper/add");
-    }
-
-    if (!Array.isArray(days) || days.length === 0) {
-      req.flash("error", "Select at least 1 day.");
-      return res.redirect("/newspaper/add");
-    }
     db.get(
       "Select * from days where combinationDays = ?",
       [days],

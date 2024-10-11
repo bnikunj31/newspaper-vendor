@@ -32,36 +32,6 @@ exports.addUser = async (req, res) => {
   try {
     const { name, address, contact_number, colony, paid, due, route } =
       req.body;
-    const nameRegex = /^[A-Za-z]+$/;
-    const phoneRegex = /^\d{10}$/;
-    const routeRegex = /^\d+$/;
-    if (!nameRegex.test(name) || name.length < 3) {
-      req.flash(
-        "Error",
-        "Name should contain only characters and more than 3 characters."
-      );
-      console.log(req.flash("error"));
-    }
-
-    if (address.length < 5) {
-      req.flash("Error", "Address should contain more than 5 characters.");
-      console.log(req.flash("error"));
-    }
-
-    if (!phoneRegex.test(contact_number)) {
-      req.flash("Error", "Phone should be in the format: 1234567890.");
-      console.log(req.flash("error"));
-    }
-
-    if (colony.length <= 0) {
-      req.flash("Error", "Please select the colony.");
-      console.log(req.flash("error"));
-    }
-
-    if (!routeRegex.test(route) || route.length <= 0) {
-      req.flash("Error", "Route should contain only digits and can't be empty.");
-      console.log(req.flash("error"));
-    }
     await db.run(
       "INSERT INTO customer (customerName, address, contactNumber, colony, paid, due, route) VALUES (?, ?, ?, ?, ?, ?, ?)",
       [name, address, contact_number, colony, paid, due, route],

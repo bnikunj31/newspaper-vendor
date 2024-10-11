@@ -175,25 +175,6 @@ exports.singleTransactionAdd = async (req, res) => {
 exports.singleTransaction = async (req, res) => {
   try {
     const { customerId, newspaperCode, days, date } = req.body;
-    if (!customerId || customerId.length < 1) {
-      req.flash("error", "Customer ID is required.");
-      return res.redirect("/consumptions/add");
-    }
-
-    if (!newspaperCode || newspaperCode.length < 2) {
-      req.flash("error", "Newspaper code must be at least 2 characters long.");
-      return res.redirect("/consumptions/add");
-    }
-
-    if (!Array.isArray(days) || days.length === 0) {
-      req.flash("error", "Select at least 1 day.");
-      return res.redirect("/consumptions/add");
-    }
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!date || !dateRegex.test(date)) {
-      req.flash("error", "Date must be in the format YYYY-MM-DD.");
-      return res.redirect("/consumptions/add");
-    }
     db.get(
       `Select price from newspaper where newspaperId = ? `,
       [newspaperCode],
