@@ -25,8 +25,16 @@ exports.addNewspaperForm = async (req, res) => {
       if (err) {
         console.error("Error fetching Newspapers: ", err);
       } else {
-          res.render("Newspaper/addNewspaper", {
-          rows: rows,
+        db.all("Select * from newspaper", (err, data) => {
+          if (err) {
+            console.error("Error in fetching newspapers for form: ", err);
+          } else {
+            // res.json({ rows, data });
+            res.render("Newspaper/addNewspaper", {
+              rows: rows,
+              data: data,
+            });
+          }
         });
       }
     });

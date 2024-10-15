@@ -55,7 +55,8 @@
             <input
               id="priceFilterInput"
               class="form-control"
-              type="text"
+              type="number"
+              min="1"
               placeholder="Filter by Price"
             />
           </div>
@@ -70,8 +71,8 @@
             <th data-sort="id"># <i class="fas fa-sort"></i></th>
             <th data-sort="code">Newspaper Code <i class="fas fa-sort"></i></th>
             <th data-sort="name">Newspaper Name <i class="fas fa-sort"></i></th>
-            <th data-sort="price">Price</th>
             <th data-sort="days">Days</th>
+            <th data-sort="price">Price</th>
             <th data-sort="isActive">Is Active</th>
             <th>Action</th>
           </tr>
@@ -82,8 +83,8 @@
             <td><%= row.newspaperId %></td>
             <td><%= row.newspaperCode %></td>
             <td><%= row.newspaperName %></td>
-            <td><%= row.price %></td>
             <td><%= row.combinationDays %></td>
+            <td><%= row.price %></td>
             <td>
               <input type="checkbox" class="form-check-input custom-checkbox"
               disabled <%= row.Available ? 'checked' : '' %>>

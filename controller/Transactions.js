@@ -3,25 +3,36 @@ const db = require("../config/db");
 exports.showTransactions = async (req, res) => {
   try {
     db.all(
-      `
-          SELECT 
-            transactions.*, 
-            customer.*, 
-            newspaper.*, 
-            days.*
-          FROM 
-            transactions
-          INNER JOIN 
-            customer ON transactions.customerId = customer.customerId
-          INNER JOIN 
-            newspaper ON transactions.newspaperId = newspaper.newspaperId
-          INNER JOIN 
-            days ON transactions.combinationId = days.combinationId
-        `,
+      `SELECT
+        t.transactionDate,
+        c.customerId,
+        c.customerName,
+        GROUP_CONCAT(t.transaction_id) AS transaction_id,
+        n.newspaperName,
+        n.newspaperCode,
+        SUM(n.price) AS price,
+        d.combinationDays,
+        t.Attendance
+      FROM 
+        transactions t
+      INNER JOIN 
+        customer c ON t.customerId = c.customerId
+      INNER JOIN 
+        newspaper n ON t.newspaperId = n.newspaperId
+      INNER JOIN 
+        days d ON t.combinationId = d.combinationId
+      GROUP BY 
+        t.transactionDate, 
+        c.customerId, 
+        d.combinationDays
+      ORDER BY 
+        t.transactionDate DESC;
+      `,
       (err, data) => {
         if (err) {
           console.error("Error in fetching transactions: ", err);
         } else {
+          // res.json({ data });
           res.render("Transactions/showTransactions", { data: data });
         }
       }
@@ -82,6 +93,7 @@ exports.generateTransactions = async (req, res) => {
   }
 };
 
+//   Not needed for now so we are not using this for now (Cron Job Related Code)
 exports.addTransactions = async (req, res) => {
   try {
     db.all(
@@ -125,7 +137,7 @@ exports.addTransactions = async (req, res) => {
                   if (customer.lastActive >= getDate45DaysAgo()) {
                     db.run(
                       `UPDATE customer SET defaulter = ? WHERE customerId = ? `,
-                      [customer.lastActive, customer.customerId],
+                      [1, customer.customerId],
                       (err) => {
                         if (err) {
                           console.error(
@@ -242,20 +254,37 @@ exports.remove = async (req, res) => {
 };
 
 // Generate Transactions
+
 exports.generate = async (req, res) => {
   try {
-    const { colony } = req.body;
-    db.run(
+    const { colony, date } = req.body;
+    db.all(
       `
-        UPDATE consumption 
-        SET isActive = 1 
-        WHERE colonyCode = ?
+      SELECT consumption.*, newspaper.price
+      FROM consumption
+      JOIN newspaper
+      ON consumption.newspaperId = newspaper.newspaperId
+      WHERE consumption.colonyCode = ?;
       `,
       [colony],
-      (err) => {
+      (err, data) => {
         if (err) {
           console.error("Error update transactions (consumptions): ", err);
         } else {
+          data.forEach((row) => {
+            const { newspaperId, customerId, combinations, isActive, price } =
+              row;
+            const query = `INSERT INTO transactions (customerId, newspaperId, attendance, combinationId, price, transactionDate) VALUES (?,?,?,?,?,?)`;
+            db.run(
+              query,
+              [customerId, newspaperId, isActive, combinations, price, date],
+              (err) => {
+                if (err) {
+                  console.error("Error in generating errors: ", err);
+                }
+              }
+            );
+          });
           res.redirect("/transactions");
         }
       }

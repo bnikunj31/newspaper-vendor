@@ -21,7 +21,7 @@
 
     <div class="container my-5 rounded bg-light p-4">
       <h2>Generate Transactions</h2>
-      <form method="post" action="/transactions/generate">
+      <form method="post" action="/transactions/generate" id="transactionForm">
         <!-- Colony (Dropdown with search) -->
         <div class="mb-3">
           <label for="colony" class="form-label">Colony</label>
@@ -40,6 +40,18 @@
           </select>
         </div>
 
+        <!-- Date Input Field -->
+        <div class="mb-3">
+          <label for="date" class="form-label">Transaction Date</label>
+          <input
+            type="date"
+            class="form-control"
+            id="date"
+            name="date"
+            required
+          />
+        </div>
+
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary">
           Generate Transactions
@@ -53,6 +65,19 @@
     <script>
       $(document).ready(function () {
         $(".select2").select2();
+
+        // Format date before form submission
+        $("#transactionForm").on("submit", function (e) {
+          const dateInput = $("#date");
+          const dateValue = dateInput.val();
+
+          // Validate if the date is in the right format
+          const datePattern = /^\d{4}-\d{2}-\d{2}$/; // Matches yyyy-mm-dd
+          if (!datePattern.test(dateValue)) {
+            e.preventDefault(); // Prevent form submission
+            alert("Please enter a valid date in the format YYYY-MM-DD.");
+          }
+        });
       });
     </script>
   </body>

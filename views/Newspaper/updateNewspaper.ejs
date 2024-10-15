@@ -23,7 +23,7 @@
     <%- include('../navbar.html') %>
 
     <div class="container my-5 bg-light p-4 border rounded">
-      <h2>Add Newspaper</h2>
+      <h2>Update Newspaper</h2>
       <form method="post" action="/newspaper/update">
         <!-- Id -->
         <input type="hidden" name="id" id="id" value="<%= rows.newspaperId %>"/>
@@ -59,6 +59,23 @@
           <span class="error"></span>
         </div>
 
+         <!-- Combinations (Dropdown populated from database) -->
+        <div class="mb-3">
+          <label for="days" class="form-label">Combinations</label>
+          <select class="form-select" id="days" name="days[]" required>
+            <option selected disabled>Select Combination</option>
+            <% data.forEach(function(row) { %>
+            <option
+              value="<%= row.combinationDays %>"
+              <%= row.combinationDays === rows.combinationDays ? 'selected' : '' %>
+            >
+              <%= row.combinationDays %>
+            </option>
+            <% }) %>
+          </select>
+          <span class="error"></span>
+        </div>
+
         <!-- Price -->
         <div class="mb-3">
           <label for="price" class="form-label">Price</label>
@@ -87,23 +104,6 @@
             checked
           />
           <label for="available" class="form-label">Active</label>
-        </div>
-
-        <!-- Colony (Dropdown populated from database) -->
-        <div class="mb-3">
-          <label for="days" class="form-label">Combinations</label>
-          <select class="form-select" id="days" name="days[]" required>
-            <option selected disabled>Select Combination</option>
-            <% data.forEach(function(row) { %>
-            <option
-              value="<%= row.combinationDays %>"
-              <%= row.combinationDays === rows.combinationDays ? 'selected' : '' %>
-            >
-              <%= row.combinationDays %>
-            </option>
-            <% }) %>
-          </select>
-          <span class="error"></span>
         </div>
 
         <!-- Submit Button -->

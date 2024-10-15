@@ -33,9 +33,17 @@
             class="form-control"
             id="code"
             name="code"
+            list="newspaperCode"
             placeholder="Enter code"
             required
           />
+          <datalist id="newspaperCode">
+            <% const uniqueData = new Set(); data.forEach(dataValue => {
+            uniqueData.add(dataValue.newspaperCode); });
+            uniqueData.forEach(uniqueCode => { %>
+            <option value="<%= uniqueCode %>"></option>
+            <% }) %>
+          </datalist>
           <span class="error"></span>
         </div>
 
@@ -50,6 +58,20 @@
             placeholder="Enter name"
             required
           />
+          <span class="error"></span>
+        </div>
+
+        <!-- Days (Dropdown populated from database) -->
+        <div class="mb-3">
+          <label for="days" class="form-label">Combinations</label>
+          <select class="form-select" id="days" name="days" required>
+            <option selected disabled>Select Combination</option>
+            <% rows.forEach(function(row) {%>
+            <option value="<%= row.combinationDays %>">
+              <%= row.combinationDays %>
+            </option>
+            <% }) %>
+          </select>
           <span class="error"></span>
         </div>
 
@@ -80,21 +102,7 @@
             checked
           />
           <span class="error"></span>
-          <label for="available" class="form-label">Active</label>
-        </div>
-
-        <!-- Days (Dropdown populated from database) -->
-        <div class="mb-3">
-          <label for="days" class="form-label">Combinations</label>
-          <select class="form-select" id="days" name="days" required>
-            <option selected disabled>Select Combination</option>
-            <% rows.forEach(function(row) {%>
-            <option value="<%= row.combinationDays %>">
-              <%= row.combinationDays %>
-            </option>
-            <% }) %>
-          </select>
-          <span class="error"></span>
+          <label for="available" class="form-label px-2">Active</label>
         </div>
 
         <!-- Submit Button -->
@@ -103,8 +111,21 @@
         </button>
       </form>
     </div>
+
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
+      const newspapers = <%- JSON.stringify(data) %>;
+
+      document.getElementById('code').addEventListener('input', function () {
+        const selectedCode = this.value;
+        const newspaper = newspapers.find(item => item.newspaperCode === selectedCode);
+        if (newspaper) {
+          document.getElementById('name').value = newspaper.newspaperName; // Use the correct key
+        } else {
+          document.getElementById('name').value = '';
+        }
+      });
       document.querySelector("form").addEventListener("submit", function (e) {
         const code = document.getElementById("code").value;
         const name = document.getElementById("name").value;
@@ -121,7 +142,7 @@
           isValid = false;
         } else if (code.length < 2) {
           errorElements[0].textContent =
-            "Newspaper Code must contain atleast 2 characters";
+            "Newspaper Code must contain at least 2 characters";
           isValid = false;
         } else {
           errorElements[0].textContent = "";
@@ -132,11 +153,11 @@
           isValid = false;
         } else if (name.length < 5) {
           errorElements[1].textContent =
-            "Newspaper Name must contains 5 alphabets";
+            "Newspaper Name must contain at least 5 alphabets";
           isValid = false;
-        } else if (namePattern.test(name)) {
+        } else if (!namePattern.test(name)) {
           errorElements[1].textContent =
-            "Newspaper Name must contains only alphabets";
+            "Newspaper Name must contain only alphabets";
           isValid = false;
         } else {
           errorElements[1].textContent = "";

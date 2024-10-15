@@ -89,6 +89,19 @@
           <span id="newspaperError" class="error"></span>
         </div>
 
+        <!-- Days (Dropdown with search) -->
+        <div class="mb-3">
+          <label for="days" class="form-label">Days</label>
+          <select class="form-select select2" id="days" name="days" required>
+            <option value="" selected disabled>Select Days</option>
+            <% data.filter(item => item.type === 'Days').forEach(function(day) {
+            %>
+            <option value="<%= day.id %>"><%= day.name %></option>
+            <% }) %>
+          </select>
+          <span id="daysError" class="error"></span>
+        </div>
+
         <!-- Price -->
         <div class="mb-3">
           <label for="price" class="form-label">Price</label>
@@ -102,19 +115,6 @@
             required
           />
           <span id="priceError" class="error"></span>
-        </div>
-
-        <!-- Days (Dropdown with search) -->
-        <div class="mb-3">
-          <label for="days" class="form-label">Days</label>
-          <select class="form-select select2" id="days" name="days" required>
-            <option value="" selected disabled>Select Days</option>
-            <% data.filter(item => item.type === 'Days').forEach(function(day) {
-            %>
-            <option value="<%= day.id %>"><%= day.name %></option>
-            <% }) %>
-          </select>
-          <span id="daysError" class="error"></span>
         </div>
 
         <!-- Date (Date input field) -->

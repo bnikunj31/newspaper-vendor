@@ -47,32 +47,50 @@
         >
           <h2 class="text-primary">All Customers</h2>
 
+          <!-- Colony Filter -->
+          <input
+            type="text"
+            class="form-control w-25"
+            list="colonies"
+            id="colonyFilter"
+            placeholder="Search Colonies"
+          />
+          <datalist id="colonies">
+            <option value="">All Colonies</option>
+            <% const uniqueColonies = [...new Set(rows.map(colony =>
+            colony.colony))]; uniqueColonies.forEach(colony => { %>
+            <option value="<%= colony %>"><%= colony %></option>
+            <% }) %>
+          </datalist>
+
           <!-- Search Users -->
           <input
-            id="searchInput"
-            class="form-control w-25"
             type="text"
-            placeholder="Search users..."
+            class="form-control w-25"
+            list="users"
+            id="searchUserDropdown"
+            placeholder="Search Customers"
           />
+          <datalist id="users">
+            <option value="">Search users...</option>
+            <% const uniqueNames = [...new Set(rows.map(row =>
+            row.customerName))]; uniqueNames.forEach(name => { %>
+            <option value="<%= name %>"><%= name %></option>
+            <% }) %>
+          </datalist>
 
-          <!-- Route Filter -->
-          <input
-            id="routeFilter"
-            class="form-control w-25"
-            type="text"
-            placeholder="Filter by Route"
-          />
           <a href="/add" class="btn btn-outline-primary">Add Customer</a>
         </div>
         <div class="filter-container mt-3">
           <span class="fw-bolder">Filter:</span>
-          <!-- Colony Filter -->
-          <select id="colonyFilter" class="form-control">
-            <option value="">All Colonies</option>
-            <% rows.forEach(colony => { %>
-            <option value="<%= colony.colony %>"><%= colony.colony %></option>
-            <% }) %>
-          </select>
+          <!-- Route Filter -->
+          <input
+            id="routeFilter"
+            class="form-control w-25"
+            type="number"
+            min="1"
+            placeholder="Filter by Route"
+          />
 
           <!-- Last Active Filter -->
           <input
@@ -86,7 +104,8 @@
           <input
             id="paidFilter"
             class="form-control w-25"
-            type="text"
+            type="number"
+            min="0"
             placeholder="Filter by Paid"
           />
 
@@ -94,7 +113,8 @@
           <input
             id="dueFilter"
             class="form-control w-25"
-            type="text"
+            type="number"
+            min="0"
             placeholder="Filter by Due"
           />
 
@@ -189,8 +209,203 @@
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const colonyFilter = document.getElementById("colonyFilter");
+        const searchUserDropdown =
+          document.getElementById("searchUserDropdown");
+        const userTableBody = document.getElementById("userTableBody");
+
         const routeFilter = document.getElementById("routeFilter");
-        const searchInput = document.getElementById("searchInput");
+        const lastActiveFilter = document.getElementById("lastActiveFilter");
+        const paidFilter = document.getElementById("paidFilter");
+        const dueFilter = document.getElementById("dueFilter");
+        const defaulterFilter = document.getElementById("defaulterFilter");
+
+        // Function to apply all filters
+        function applyFilters() {
+          const colonyValue = colonyFilter.value.toLowerCase();
+          const userValue = searchUserDropdown.value.toLowerCase();
+          const routeValue = routeFilter.value;
+          const lastActiveValue = lastActiveFilter.value;
+          const paidValue = paidFilter.value;
+          const dueValue = dueFilter.value;
+          const defaulterChecked = defaulterFilter.checked;
+
+          const rows = Array.from(userTableBody.getElementsByTagName("tr"));
+
+          rows.forEach((row) => {
+            const cells = row.getElementsByTagName("td");
+            const nameText = cells[1].textContent.toLowerCase();
+            const addressText = cells[2].textContent.toLowerCase();
+            const colonyText = cells[4].textContent.toLowerCase();
+            const paidText = cells[5].textContent;
+            const dueText = cells[6].textContent;
+            const routeText = cells[7].textContent;
+            const lastActiveText = cells[8].textContent;
+            const isDefaulter =
+              cells[9].getElementsByTagName("input")[0].checked;
+
+            // Apply filters
+            let showRow = true;
+
+            if (colonyValue && colonyText !== colonyValue) {
+              showRow = false;
+            }
+
+            if (userValue && !nameText.includes(userValue)) {
+              showRow = false;
+            }
+
+            if (routeValue && routeText !== routeValue) {
+              showRow = false;
+            }
+
+            // Check if the last active date is valid and compare
+            if (lastActiveValue) {
+              const lastActiveDate = new Date(lastActiveText);
+              const filterDate = new Date(lastActiveValue);
+              if (lastActiveDate < filterDate) {
+                showRow = false;
+              }
+            }
+
+            // Check if the paid value is valid and compare
+            if (paidValue && parseFloat(paidText) < parseFloat(paidValue)) {
+              showRow = false;
+            }
+
+            // Check if the due value is valid and compare
+            if (dueValue) {
+              const parsedDueValue = parseFloat(dueValue);
+              const parsedDueText = parseFloat(dueText);
+
+              // Show rows where the due amount is less than or equal to the input value
+              if (parsedDueText < parsedDueValue) {
+                showRow = false;
+              }
+            }
+
+            if (defaulterChecked && !isDefaulter) {
+              showRow = false;
+            }
+
+            // Show or hide the row based on filter results
+            row.style.display = showRow ? "" : "none";
+          });
+        }
+
+        // Attach event listeners to each filter
+        colonyFilter.addEventListener("change", applyFilters);
+        searchUserDropdown.addEventListener("input", applyFilters);
+        routeFilter.addEventListener("input", applyFilters);
+        lastActiveFilter.addEventListener("input", applyFilters);
+        paidFilter.addEventListener("input", applyFilters);
+        dueFilter.addEventListener("input", applyFilters);
+        defaulterFilter.addEventListener("change", applyFilters);
+
+        // Update the user dropdown when the colony filter changes
+        function filterUsersByColony() {
+          const colonyValue = colonyFilter.value.toLowerCase();
+          const rows = userTableBody.getElementsByTagName("tr");
+          let filteredNames = new Set(); // Use Set to avoid duplicates
+
+          Array.from(rows).forEach((row) => {
+            const cells = row.getElementsByTagName("td");
+            const colonyText = cells[4].textContent.toLowerCase();
+            const nameText = cells[1].textContent;
+
+            if (colonyValue === "" || colonyText === colonyValue) {
+              filteredNames.add(nameText);
+            }
+          });
+
+          updateSearchUserDropdown(filteredNames);
+        }
+
+        function updateSearchUserDropdown(filteredNames) {
+          const usersDataList = document.getElementById("users");
+          usersDataList.innerHTML = ""; // Clear the existing options
+
+          // Add the default 'search users' option
+          const defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.textContent = "Search users...";
+          usersDataList.appendChild(defaultOption);
+
+          // Append the filtered user options
+          filteredNames.forEach((name) => {
+            const option = document.createElement("option");
+            option.value = name;
+            usersDataList.appendChild(option);
+          });
+        }
+
+        // Event listener for colony filter
+        colonyFilter.addEventListener("change", function () {
+          filterUsersByColony();
+          applyFilters(); // Apply filters after updating the user dropdown
+        });
+      });
+    </script>
+  </body>
+</html>
+
+<!-- <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const colonyFilter = document.getElementById("colonyFilter");
+        const searchUserDropdown =
+          document.getElementById("searchUserDropdown");
+        const userTableBody = document.getElementById("userTableBody");
+
+        function filterUsersByColony() {
+          const colonyValue = colonyFilter.value;
+          const rows = userTableBody.getElementsByTagName("tr");
+          let filteredNames = new Set(); // Use Set to avoid duplicates
+
+          // Filter users by selected colony
+          Array.from(rows).forEach((row) => {
+            const cells = row.getElementsByTagName("td");
+            const colonyText = cells[4].textContent;
+            const nameText = cells[1].textContent;
+
+            if (colonyValue === "" || colonyText === colonyValue) {
+              filteredNames.add(nameText);
+            }
+          });
+
+          // Update the datalist for users with filtered names
+          updateSearchUserDropdown(filteredNames);
+        }
+
+        function updateSearchUserDropdown(filteredNames) {
+          const usersDataList = document.getElementById("users");
+          usersDataList.innerHTML = ""; // Clear the existing options
+
+          // Add the default 'search users' option
+          const defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.textContent = "Search users...";
+          usersDataList.appendChild(defaultOption);
+
+          // Append the filtered user options
+          filteredNames.forEach((name) => {
+            const option = document.createElement("option");
+            option.value = name;
+            usersDataList.appendChild(option);
+          });
+        }
+
+        // Event listener for colony filter
+        colonyFilter.addEventListener("change", function () {
+          filterUsersByColony();
+        });
+      });
+    </script> -->
+
+<!-- <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const colonyFilter = document.getElementById("colonyFilter");
+        const routeFilter = document.getElementById("routeFilter");
+        const searchUserDropdown =
+          document.getElementById("searchUserDropdown");
         const lastActiveFilter = document.getElementById("lastActiveFilter");
         const paidFilter = document.getElementById("paidFilter");
         const dueFilter = document.getElementById("dueFilter");
@@ -201,10 +416,40 @@
         const rowsPerPage = 50;
         let currentPage = 1;
 
+        function filterUsersByColony() {
+          const colonyValue = colonyFilter.value;
+          const rows = userTableBody.getElementsByTagName("tr");
+          let filteredNames = new Set(); // Using Set to avoid duplicates
+
+          Array.from(rows).forEach((row) => {
+            const cells = row.getElementsByTagName("td");
+            const colonyText = cells[4].textContent;
+            const nameText = cells[1].textContent;
+
+            if (colonyValue === "" || colonyText === colonyValue) {
+              filteredNames.add(nameText);
+            }
+          });
+
+          updateSearchUserDropdown(filteredNames);
+        }
+
+        function updateSearchUserDropdown(filteredNames) {
+          searchUserDropdown.innerHTML =
+            '<option value="">Search users...</option>'; // Reset dropdown
+
+          filteredNames.forEach((name) => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            searchUserDropdown.appendChild(option);
+          });
+        }
+
         function filterTable() {
           const colonyValue = colonyFilter.value;
           const routeValue = routeFilter.value.toLowerCase();
-          const searchValue = searchInput.value.toLowerCase();
+          const searchUserValue = searchUserDropdown.value.toLowerCase();
           const lastActiveValue = lastActiveFilter.value;
           const paidValue = paidFilter.value;
           const dueValue = dueFilter.value;
@@ -226,7 +471,9 @@
             const isColonyMatch =
               colonyValue === "" || colonyText === colonyValue;
             const isRouteMatch = routeText.toLowerCase().includes(routeValue);
-            const isNameMatch = nameText.toLowerCase().includes(searchValue);
+            const isNameMatch =
+              searchUserValue === "" ||
+              nameText.toLowerCase() === searchUserValue;
             const isLastActiveMatch =
               lastActiveValue === "" ||
               lastActiveText.includes(lastActiveValue);
@@ -292,16 +539,17 @@
         }
 
         // Event listeners for filters
-        colonyFilter.addEventListener("change", filterTable);
+        colonyFilter.addEventListener("change", function () {
+          filterUsersByColony();
+          filterTable();
+        });
         routeFilter.addEventListener("input", filterTable);
-        searchInput.addEventListener("input", filterTable);
+        searchUserDropdown.addEventListener("change", filterTable);
         lastActiveFilter.addEventListener("input", filterTable);
         paidFilter.addEventListener("input", filterTable);
         dueFilter.addEventListener("input", filterTable);
         defaulterFilter.addEventListener("change", filterTable);
 
-        filterTable(); // Initial filter setup
+        filterTable();
       });
-    </script>
-  </body>
-</html>
+    </script> -->

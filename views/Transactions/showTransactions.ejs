@@ -60,9 +60,9 @@
           <tr>
             <th data-sort="customer">Customer<i class="fas fa-sort"></i></th>
             <th data-sort="newspaper">Newspaper<i class="fas fa-sort"></i></th>
-            <th>Attendance</th>
             <th>Days</th>
             <th>Price</th>
+            <th>Attendance</th>
             <th>Transaction Date</th>
             <th>Action</th>
           </tr>
@@ -72,13 +72,13 @@
           <tr>
             <td><%= row.customerName %></td>
             <td><%= row.newspaperName %> (<%= row.newspaperCode %>)</td>
+            <td><%= row.combinationDays %></td>
+            <td><%= row.price %></td>
             <td class="text-center">
               <input type="checkbox" class="form-check-input custom-checkbox"
               name="status" <%= row.attendance == 1 ? "checked" : "" %>
               id="status" disabled />
             </td>
-            <td><%= row.combinationDays %></td>
-            <td><%= row.price %></td>
             <td><%= row.transactionDate %></td>
             <td>
               <a

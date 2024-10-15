@@ -9,8 +9,6 @@ cron.schedule("59 23 28-31 * *", () => {
     0
   ).getDate();
 
-  console.log(lastDay);
-
   if (currentDate.getDate() === lastDay) {
     const options = {
       hostname: "localhost",

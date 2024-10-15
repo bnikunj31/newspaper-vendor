@@ -78,6 +78,19 @@
           <span class="error"></span>
         </div>
 
+        <div class="mb-3 mt-4">
+          <input
+          type="checkbox"
+          class="form-check-input custom-checkbox"
+          name="defaulter"
+          id="defaulter"
+          value="1"
+          <%= data.defaulter == 1 ? "checked" : "" %> 
+          />
+          <label for="defaulter" class="form-label px-2">Defaulter</label>
+          <input type="hidden" name="defaulter" value="0" />
+        </div>
+
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary">Update User</button>
       </form>

@@ -3,13 +3,22 @@ const db = require("../config/db");
 // Display Users
 exports.showUsers = async (req, res) => {
   try {
-    db.all("Select * from customer", [], (err, rows) => {
-      if (err) {
-        console.error("Error Fetching Users: ", err);
-      } else {
-        res.render("Customer/showUsers", { rows: rows });
+    db.all(
+      `SELECT customer.*, colony.* 
+      FROM customer 
+      JOIN colony ON customer.colony = colony.colonyName
+      order by lastActive desc
+      `,
+      [],
+      (err, rows) => {
+        if (err) {
+          console.error("Error Fetching Users: ", err);
+        } else {
+          // res.json({ rows: rows });
+          res.render("Customer/showUsers", { rows: rows });
+        }
       }
-    });
+    );
   } catch (err) {
     console.log("Showing User Catch: ", err);
   }
@@ -61,6 +70,7 @@ exports.update = async (req, res) => {
             if (err) {
               console.error("Error Fetching user's colonies: ", err);
             } else {
+              // res.json({ data, colonies });
               res.render("Customer/updateUser", {
                 data: data,
                 colonies: colonies,
@@ -80,16 +90,26 @@ exports.update = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const { id, name, address, contact_number, colony, paid, due, route } =
-      req.body;
+    const {
+      id,
+      name,
+      address,
+      contact_number,
+      colony,
+      paid,
+      due,
+      route,
+      defaulter,
+    } = req.body;
+    console.log(req.body);
+
     db.run(
-      `UPDATE customer SET customerName = '${name}', address = '${address}', contactNumber = '${contact_number}', colony = '${colony}', paid = '${paid}', due = '${due}', route = '${route}' WHERE customerId = ${id}`,
+      `UPDATE customer SET customerName = '${name}', address = '${address}', contactNumber = '${contact_number}', colony = '${colony}', paid = '${paid}', due = '${due}', route = '${route}', defaulter = '${defaulter[0]}' WHERE customerId = ${id}`,
       (err) => {
         if (err) {
           console.error("Error is Updating", err);
         } else {
           res.redirect("/");
-          console.log("User Updated Successfully");
         }
       }
     );
